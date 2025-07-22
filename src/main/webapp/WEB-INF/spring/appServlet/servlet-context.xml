@@ -9,11 +9,15 @@
 
     <mvc:annotation-driven />
 
-    <context:component-scan base-package="com.kubulkup" />
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <context:component-scan base-package="com.external.auth" />
 
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/views/" /> <property name="suffix" value=".jsp" /> </bean>
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
 
-    <mvc:resources mapping="/resources/**" location="/resources/" />
+<!--    <mvc:resources mapping="/resource/**" location="/resource/"></mvc:resources>-->
 
 </beans>
