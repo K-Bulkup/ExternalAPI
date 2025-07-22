@@ -56,3 +56,8 @@ CREATE TABLE `withdrawal_pools` (
                                        REFERENCES `user_assets` (`user_id`)
                                        ON DELETE CASCADE
 );
+
+-- 인덱스 생성
+CREATE INDEX idx_snapshot_user ON snapshot_pools(user_id);
+CREATE INDEX idx_withdrawal_user ON withdrawal_pools(user_id);
+CREATE INDEX idx_composition_user ON composition_pools(user_id);
