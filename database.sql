@@ -64,5 +64,5 @@ CREATE INDEX idx_withdrawal_user ON withdrawal_pools(user_id);
 CREATE INDEX idx_composition_user ON composition_pools(user_id);
 
 -- 테스트
-select count(*) from users;
+select * from users;
 delete  from users;
