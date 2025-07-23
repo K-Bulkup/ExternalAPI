@@ -10,5 +10,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TokenResponseDTO {
     private String accessToken;
+    private String refreshToken;
     private String fintechUseNum;
 }
