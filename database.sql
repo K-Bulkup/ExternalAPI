@@ -1,9 +1,10 @@
 -- 0. 유저 테이블
-CREATE TABLE `Users` (
+CREATE TABLE `Users` ( 
                          `user_id` BIGINT NOT NULL,
                          `bank` ENUM('국민은행', '신한은행', '카카오뱅크', '토스뱅크', '농협', '우리은행', '하나은행', '기타') NOT NULL,
                          `account_num` VARCHAR(50) NULL,
                          `fintech_use_num` VARCHAR(100) NULL,
+                         # `refresh_token` VARCHAR(100) NULL,
                          `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                          CONSTRAINT `PK_USERS` PRIMARY KEY (`user_id`)
 );
