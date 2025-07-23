@@ -4,6 +4,7 @@ import com.external.auth.domain.UserVO;
 import com.external.auth.dto.TokenRequestDTO;
 import com.external.auth.dto.TokenResponseDTO;
 import com.external.auth.exception.BadRequestException;
+import com.external.auth.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,4 +40,14 @@ public class AuthController {
         return ResponseEntity.ok(dto);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshAccessToken(
+            @RequestHeader("Authorization") String refreshHeader,
+            @RequestHeader("X-User-Id") BigInteger userId
+    ) {
+        String refreshToken = refreshHeader.replace("Bearer ", "");
+        TokenResponseDTO dto = authService.getNewAccessTokenByUserId(refreshToken, userId);
+
+        return ResponseEntity.ok(dto);
+    }
 }
