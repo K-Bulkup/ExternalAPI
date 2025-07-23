@@ -66,5 +66,26 @@ public class AuthService {
         return new TokenResponseDTO(accessToken, refreshToken, fintechUseNum);
     }
 
+    @Transactional
+    public TokenResponseDTO getNewAccessTokenByUserId(String refreshToken, BigInteger userId) {
+
+        // 1. Redis에서 저장된 리프레시 토큰 조회
+        String storedRefreshToken = redisUtil.getValue("refresh:user:" + userId);
+
+        if (storedRefreshToken == null) {
+            throw new UnauthorizedException("계좌/은행 정보 재등록 필요");
+        }
+
+        if (!refreshToken.equals(storedRefreshToken)) {
+            throw new UnauthorizedException("유효하지 않은 리프레시 토큰입니다.");
+        }
+
+        // 2. 새로운 액세스 토큰 발급
+        String newAccessToken = jwtUtil.generateToken(userId);
+        String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
+
+        return new TokenResponseDTO(newAccessToken, refreshToken, fintechUseNum);
+    }
+
 }
 
