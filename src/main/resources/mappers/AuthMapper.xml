@@ -10,4 +10,15 @@
         VALUES (#{userId}, #{bank}, #{accountNum}, #{fintechUseNum})
     </insert>
 
+    <select id="findByUserId" resultType="com.external.auth.domain.UserVO" parameterType="java.math.BigInteger">
+        SELECT * FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="findFintechUseNumByUserId" parameterType="java.math.BigInteger" resultType="java.lang.String">
+        SELECT fintech_use_num
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
 </mapper>
