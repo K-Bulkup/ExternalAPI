@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.external.api.mapper.UserAssetMapper">
+
+    <update id="assignSnapshotPools">
+        UPDATE snapshot_pools
+        SET user_id = #{userId}
+        WHERE snapshot_id IN (
+        SELECT snapshot_id FROM (
+        SELECT sp.snapshot_id
+        FROM snapshot_pools sp
+        WHERE sp.user_id IS NULL
+        AND sp.snapshot_date NOT IN (
+        SELECT snapshot_date FROM snapshot_pools WHERE user_id = #{userId}
+        )
+        AND sp.snapshot_id IN
+        <foreach item="snapshot" collection="snapshots" open="(" separator="," close=")">
+            #{snapshot.snapshotId}
+        </foreach>
+        ) temp
+        )
+    </update>
+
+
+    <update id="assignWithdrawalPools">
+        UPDATE withdrawal_pools
+        SET user_id = #{userId}
+        WHERE transaction_id IN
+        <foreach item="withdrawal" collection="withdrawals" open="(" separator="," close=")">
+            #{withdrawal.transactionId}
+        </foreach>
+        AND user_id IS NULL
+    </update>
+
+    <update id="assignCompositionPool">
+        UPDATE composition_pools
+        SET user_id = #{userId}
+        WHERE composition_id = #{composition.compositionId}
+    </update>
+
+    <select id="findSnapshotsByUserId" resultType="com.external.api.domain.Snapshot">
+        SELECT *
+        FROM snapshot_pools
+        WHERE user_id = #{userId}
+        ORDER BY snapshot_date DESC
+    </select>
+
+    <select id="findWithdrawalsByUserId" resultType="com.external.api.domain.Withdrawal">
+        SELECT *
+        FROM withdrawal_pools
+        WHERE user_id = #{userId}
+        ORDER BY transaction_date DESC
+    </select>
+
+    <select id="findCompositionByUserId" resultType="com.external.api.domain.Composition">
+        SELECT *
+        FROM composition_pools
+        WHERE user_id = #{userId} LIMIT 1
+    </select>
+
+</mapper>
