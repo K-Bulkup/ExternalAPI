@@ -63,6 +63,28 @@ CREATE INDEX idx_snapshot_user ON snapshot_pools(user_id);
 CREATE INDEX idx_withdrawal_user ON withdrawal_pools(user_id);
 CREATE INDEX idx_composition_user ON composition_pools(user_id);
 
--- 테스트
+-- 토큰 테스트
 select * from users;
 delete from users;
+
+-- 매핑 테스트
+SELECT * FROM user_assets WHERE user_id = 1;
+INSERT INTO user_assets (user_id) VALUES (1);
+
+select count(*) from snapshot_pools where user_id = 1;
+select count(*) from withdrawal_pools where user_id = 1;
+
+-- 1. snapshot_pools 초기화
+UPDATE snapshot_pools
+SET user_id = NULL
+WHERE user_id = 1;
+
+-- 2. withdrawal_pools 초기화
+UPDATE withdrawal_pools
+SET user_id = NULL
+WHERE user_id = 1;
+
+-- 3. composition_pools 초기화
+UPDATE composition_pools
+SET user_id = NULL
+WHERE user_id = 1;

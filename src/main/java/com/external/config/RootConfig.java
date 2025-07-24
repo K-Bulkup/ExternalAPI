@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @PropertySource({"classpath:/application.properties", "classpath:config/db.properties", "classpath:config/redis.properties"})
-@MapperScan(basePackages = "com.external.auth.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = {"com.external.api.mapper", "com.external.auth.mapper"}, sqlSessionFactoryRef = "sqlSessionFactory")
 @EnableTransactionManagement
 public class RootConfig {
 
@@ -57,7 +57,7 @@ public class RootConfig {
         SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
         sqlSessionFactory.setDataSource(dataSource());
         sqlSessionFactory.setConfigLocation(new org.springframework.core.io.ClassPathResource("mybatis-config.xml"));
-        sqlSessionFactory.setMapperLocations(new org.springframework.core.io.support.PathMatchingResourcePatternResolver().getResources("classpath:mappers/*.xml"));
+        sqlSessionFactory.setMapperLocations(new org.springframework.core.io.support.PathMatchingResourcePatternResolver().getResources("classpath:mappers/**/*.xml"));
         return sqlSessionFactory.getObject();
     }
 
