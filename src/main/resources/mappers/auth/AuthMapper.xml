@@ -10,6 +10,10 @@
         VALUES (#{userId}, #{bank}, #{accountNum}, #{fintechUseNum})
     </insert>
 
+    <insert id="createUserAsset">
+        INSERT INTO user_assets (user_id) VALUES (#{userId})
+    </insert>
+
     <select id="findByUserId" resultType="com.external.auth.domain.UserVO" parameterType="java.math.BigInteger">
         SELECT * FROM users
         WHERE user_id = #{userId}

@@ -9,6 +9,8 @@ import java.math.BigInteger;
 public interface AuthMapper {
     void createUser(UserVO userVO);
 
+    void createUserAsset(BigInteger userId);
+
     UserVO findByUserId(BigInteger userId);
 
     String findFintechUseNumByUserId(BigInteger userId);

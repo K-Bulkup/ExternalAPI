@@ -88,3 +88,6 @@ WHERE user_id = 1;
 UPDATE composition_pools
 SET user_id = NULL
 WHERE user_id = 1;
+
+-- user_assets 초기화
+delete from user_assets;

@@ -37,6 +37,7 @@ public class AuthService {
 
         UserVO userVO = UserVO.createUserVO(userId, accountNum, bank, fintechUseNum);
         authMapper.createUser(userVO);
+        authMapper.createUserAsset(userId);
         String refreshToken = createRefreshToken(userId);
         String accessToken = jwtUtil.generateToken(userId);
 
