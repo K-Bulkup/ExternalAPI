@@ -1,10 +1,8 @@
 package com.external.auth.controller;
 
-import com.external.auth.domain.UserVO;
-import com.external.auth.dto.TokenRequestDTO;
-import com.external.auth.dto.TokenResponseDTO;
+import com.external.auth.dto.TokenCreateRequestDTO;
+import com.external.auth.dto.TokenCreateResponseDTO;
 import com.external.auth.exception.BadRequestException;
-import com.external.auth.exception.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +21,8 @@ public class AuthController {
 
     @PostMapping("/token")
     public ResponseEntity<?> createToken(@RequestHeader(value = "Authorization", required = false) String authorization,
-                                         @RequestBody(required = false) TokenRequestDTO reqDTO) {
-        TokenResponseDTO dto;
+                                         @RequestBody(required = false) TokenCreateRequestDTO reqDTO) {
+        TokenCreateResponseDTO dto;
 
         if (!StringUtils.hasText(authorization)) {
             if (reqDTO == null || reqDTO.getUserId() == null) {
@@ -46,7 +44,7 @@ public class AuthController {
             @RequestHeader("X-User-Id") BigInteger userId
     ) {
         String refreshToken = refreshHeader.replace("Bearer ", "");
-        TokenResponseDTO dto = authService.getNewAccessTokenByUserId(refreshToken, userId);
+        TokenCreateResponseDTO dto = authService.getNewAccessTokenByUserId(refreshToken, userId);
 
         return ResponseEntity.ok(dto);
     }

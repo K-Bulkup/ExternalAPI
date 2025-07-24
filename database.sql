@@ -65,4 +65,4 @@ CREATE INDEX idx_composition_user ON composition_pools(user_id);
 
 -- 테스트
 select * from users;
-delete  from users;
+delete from users;

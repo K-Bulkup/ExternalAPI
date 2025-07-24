@@ -1,9 +1,6 @@
 package com.external.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigInteger;
 
@@ -11,7 +8,7 @@ import java.math.BigInteger;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenRequestDTO {
+public class TokenCreateRequestDTO {
     private BigInteger userId;
     private String bank;
     private String accountNum;

@@ -6,7 +6,6 @@ import java.math.BigInteger;
 
 
 @Data
-@NoArgsConstructor
 @Builder
 public class UserVO {
     private BigInteger userId;
@@ -14,14 +13,11 @@ public class UserVO {
     private String accountNum;
     private String fintechUseNum;
 
-    private UserVO(BigInteger userId, String accountNum, String bank, String fintechUseNum) {
-        this.userId = userId;
-        this.accountNum = accountNum;
-        this.bank = bank;
-        this.fintechUseNum = fintechUseNum;
-    }
-
-    public static UserVO of(BigInteger userId, String accountNum, String bank, String fintechUseNum) {
-        return new UserVO(userId, accountNum, bank, fintechUseNum);
+    public static UserVO createUserVO(BigInteger userId, String accountNum, String bank, String fintechUseNum) {
+        return UserVO.builder()
+                .userId(userId)
+                .bank(bank)
+                .accountNum(accountNum)
+                .fintechUseNum(fintechUseNum).build();
     }
 }

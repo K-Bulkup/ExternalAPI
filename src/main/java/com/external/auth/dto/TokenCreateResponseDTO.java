@@ -1,14 +1,11 @@
 package com.external.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class TokenResponseDTO {
+public class TokenCreateResponseDTO {
     private String accessToken;
     private String refreshToken;
     private String fintechUseNum;

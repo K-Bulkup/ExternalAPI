@@ -1,7 +1,7 @@
 package com.external.auth.service;
 
 import com.external.auth.domain.UserVO;
-import com.external.auth.dto.TokenResponseDTO;
+import com.external.auth.dto.TokenCreateResponseDTO;
 import com.external.auth.exception.UnauthorizedException;
 import com.external.auth.mapper.AuthMapper;
 import com.external.auth.util.JwtUtil;
@@ -32,15 +32,15 @@ public class AuthService {
     private RedisUtil redisUtil;
 
     @Transactional
-    public TokenResponseDTO createFintechUseNum(BigInteger userId, String bank, String accountNum) {
+    public TokenCreateResponseDTO createFintechUseNum(BigInteger userId, String bank, String accountNum) {
         String fintechUseNum = UUID.randomUUID().toString();
 
-        UserVO userVO = UserVO.of(userId, accountNum, bank, fintechUseNum);
+        UserVO userVO = UserVO.createUserVO(userId, accountNum, bank, fintechUseNum);
         authMapper.createUser(userVO);
         String refreshToken = createRefreshToken(userId);
         String accessToken = jwtUtil.generateToken(userId);
 
-        return new TokenResponseDTO(accessToken, refreshToken, fintechUseNum);
+        return new TokenCreateResponseDTO(accessToken, refreshToken, fintechUseNum);
     }
 
     private String createRefreshToken(BigInteger userId) {
@@ -50,7 +50,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponseDTO validateAndGetUser(String accessToken) {
+    public TokenCreateResponseDTO validateAndGetUser(String accessToken) {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnauthorizedException("토큰이 유효하지 않습니다.");
         }
@@ -63,11 +63,11 @@ public class AuthService {
 
         String refreshToken = redisUtil.getValue("refresh:user:" + user.getUserId());
         String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
-        return new TokenResponseDTO(accessToken, refreshToken, fintechUseNum);
+        return new TokenCreateResponseDTO(accessToken, refreshToken, fintechUseNum);
     }
 
     @Transactional
-    public TokenResponseDTO getNewAccessTokenByUserId(String refreshToken, BigInteger userId) {
+    public TokenCreateResponseDTO getNewAccessTokenByUserId(String refreshToken, BigInteger userId) {
 
         // 1. Redis에서 저장된 리프레시 토큰 조회
         String storedRefreshToken = redisUtil.getValue("refresh:user:" + userId);
@@ -84,7 +84,7 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateToken(userId);
         String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
 
-        return new TokenResponseDTO(newAccessToken, refreshToken, fintechUseNum);
+        return new TokenCreateResponseDTO(newAccessToken, refreshToken, fintechUseNum);
     }
 
 }
