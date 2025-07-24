@@ -1,15 +1,14 @@
 package com.external.auth.dto;
 
+import com.external.auth.domain.Bank;
 import lombok.*;
-
-import java.math.BigInteger;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenCreateRequestDTO {
-    private BigInteger userId;
-    private String bank;
+public class TraineePortfolioCreateRequestDTO {
+    private Long userId;
+    private Bank bank;
     private String accountNum;
 }
