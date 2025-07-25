@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigInteger;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -13,14 +13,14 @@ public class Withdrawal {
     private Long userId;                     // FK
     private BigInteger amount;               // 출금 금액
     private WithdrawalCategory transactionCategory; // 출금 카테고리 (ENUM)
-    private LocalDateTime tranDate;          // 출금 일시
+    private LocalDate tranDate;          // 출금 일시
 
     public static Withdrawal createWithdrawal(
             Long transactionId,
             Long userId,
             BigInteger amount,
             WithdrawalCategory transactionCategory,
-            LocalDateTime tranDate
+            LocalDate tranDate
     ) {
         return Withdrawal.builder()
                 .transactionId(transactionId)
