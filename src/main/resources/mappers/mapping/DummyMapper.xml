@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.external.api.mapper.DummyMapper">
+<mapper namespace="com.external.asset.mapper.DummyMapper">
 
     <select id="getMappableSnapshotCount" resultType="int">
         SELECT COUNT(DISTINCT snapshot_date)
@@ -11,7 +11,7 @@
         WHERE user_id IS NULL
     </select>
 
-    <select id="pickRandom" resultType="com.external.api.domain.Snapshot">
+    <select id="pickRandom" resultType="com.external.asset.domain.Snapshot">
         SELECT *
         FROM snapshot_pools
         WHERE snapshot_id IN (
@@ -27,12 +27,12 @@
     </select>
 
     <!-- ✅ 출금 내역 조회 (ENUM 매핑 포함) -->
-    <resultMap id="WithdrawalResultMap" type="com.external.api.domain.Withdrawal">
+    <resultMap id="WithdrawalResultMap" type="com.external.asset.domain.Withdrawal">
         <id property="transactionId" column="transaction_id"/>
         <result property="userId" column="user_id"/>
         <result property="amount" column="amount"/>
         <result property="transactionCategory" column="transaction_category"
-                typeHandler="com.external.api.handler.WithdrawalCategoryTypeHandler"/>
+                typeHandler="com.external.asset.handler.WithdrawalCategoryTypeHandler"/>
         <result property="tranDate" column="transaction_date"/>
     </resultMap>
 
@@ -59,7 +59,7 @@
         WHERE user_id IS NULL
     </select>
 
-    <select id="pickOneRandom" resultType="com.external.api.domain.Composition">
+    <select id="pickOneRandom" resultType="com.external.asset.domain.Composition">
         SELECT *
         FROM composition_pools
         WHERE user_id IS NULL

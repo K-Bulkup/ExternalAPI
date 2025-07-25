@@ -1,6 +1,6 @@
-package com.external.api.handler;
+package com.external.asset.handler;
 
-import com.external.api.domain.WithdrawalCategory;
+import com.external.asset.domain.WithdrawalCategory;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.MappedJdbcTypes;

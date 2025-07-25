@@ -1,18 +1,16 @@
-package com.external.api.service;
+package com.external.asset.service;
 
-import com.external.api.domain.Composition;
-import com.external.api.domain.Snapshot;
-import com.external.api.domain.Withdrawal;
-import com.external.api.mapper.DummyMapper;
-import com.external.api.mapper.UserAssetMapper;
+import com.external.asset.domain.Composition;
+import com.external.asset.domain.Snapshot;
+import com.external.asset.domain.Withdrawal;
+import com.external.asset.mapper.DummyMapper;
+import com.external.asset.mapper.UserAssetMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -30,7 +28,7 @@ public class MappingService {
     private UserAssetMapper userAssetMapper;
 
     @Transactional
-    public void mapDummyDataToUser(BigInteger userId) {
+    public void mapDummyDataToUser(Long userId) {
         // 1. 자산 추이 가져오기 (랜덤 10~30개)
         int mappableSnapshotCount = dummyMapper.getMappableSnapshotCount();
         int randomSnapshotCount = ThreadLocalRandom.current().nextInt(10, 31);

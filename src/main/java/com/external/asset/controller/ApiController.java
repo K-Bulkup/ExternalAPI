@@ -1,15 +1,12 @@
-package com.external.api.controller;
+package com.external.asset.controller;
 
-import com.external.api.dto.TraineePortfolioDetailRequestDTO;
-import com.external.api.dto.TraineePortfolioDetailResponseDTO;
-import com.external.api.service.ApiService;
-import com.external.api.service.MappingService;
+import com.external.asset.dto.TraineePortfolioDetailResponseDTO;
+import com.external.asset.service.AssetService;
+import com.external.asset.service.MappingService;
 import com.external.auth.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigInteger;
 
 @RestController
 @RequestMapping("/api/trainee/portfolios")
@@ -20,7 +17,7 @@ public class ApiController {
     private MappingService mappingService;
 
     @Autowired
-    private ApiService apiService;
+    private AssetService assetService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -31,10 +28,10 @@ public class ApiController {
 //        @RequestBody(required = false) TraineePortfolioDetailRequestDTO reqDTO //핀테크번호
 
         // userid 가 1인 user 더미데이터매핑
-        mappingService.mapDummyDataToUser(BigInteger.valueOf(1));
+        mappingService.mapDummyDataToUser(1L);
 
         // userid 가 1인 user의 자산 데이터 가져오기ㅣ
-        TraineePortfolioDetailResponseDTO resDTO = apiService.getAllAssetData(BigInteger.valueOf(1));
+        TraineePortfolioDetailResponseDTO resDTO = assetService.getAllAssetData(1L);
 
         return ResponseEntity.ok(resDTO);
     }

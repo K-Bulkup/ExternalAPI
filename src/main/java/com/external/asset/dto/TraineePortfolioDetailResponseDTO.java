@@ -1,8 +1,8 @@
-package com.external.api.dto;
+package com.external.asset.dto;
 
-import com.external.api.domain.Composition;
-import com.external.api.domain.Snapshot;
-import com.external.api.domain.Withdrawal;
+import com.external.asset.domain.Composition;
+import com.external.asset.domain.Snapshot;
+import com.external.asset.domain.Withdrawal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

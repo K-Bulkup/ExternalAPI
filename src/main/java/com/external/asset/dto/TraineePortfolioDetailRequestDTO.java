@@ -1,4 +1,4 @@
-package com.external.api.dto;
+package com.external.asset.dto;
 
 public class TraineePortfolioDetailRequestDTO {
 }

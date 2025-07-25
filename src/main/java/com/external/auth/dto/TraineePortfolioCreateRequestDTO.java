@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TraineePortfolioCreateRequestDTO {
-    private Long userId;
     private Bank bank;
     private String accountNum;
 }

@@ -1,4 +1,4 @@
-package com.external.api.domain;
+package com.external.asset.domain;
 
 import lombok.Builder;
 import lombok.Data;

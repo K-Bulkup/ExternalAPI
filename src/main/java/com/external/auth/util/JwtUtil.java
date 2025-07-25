@@ -11,7 +11,7 @@ import java.util.Date;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String secretKey;
+    private String secretKey; // 본 서버와 동일하게 해야함
 
     @Value("${jwt.expiration_ms}")
     private long expirationMs;

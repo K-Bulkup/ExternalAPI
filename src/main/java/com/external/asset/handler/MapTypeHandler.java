@@ -1,4 +1,4 @@
-package com.external.api.handler;
+package com.external.asset.handler;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

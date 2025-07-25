@@ -12,7 +12,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -20,7 +19,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @PropertySource({"classpath:/application.properties", "classpath:config/db.properties", "classpath:config/redis.properties"})
-@MapperScan(basePackages = {"com.external.api.mapper", "com.external.auth.mapper"}, sqlSessionFactoryRef = "sqlSessionFactory")
+@MapperScan(basePackages = {"com.external.asset.mapper", "com.external.auth.mapper"}, sqlSessionFactoryRef = "sqlSessionFactory")
 @EnableTransactionManagement
 public class RootConfig {
 

@@ -9,7 +9,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.external.api", "com.external.auth", "com.external.config"})
+@ComponentScan(basePackages = {"com.external.asset", "com.external.auth", "com.external.config"})
 public class WebConfig implements WebMvcConfigurer {
 
     @Bean

@@ -1,4 +1,4 @@
-package com.external.api.domain;
+package com.external.asset.domain;
 
 public enum WithdrawalCategory {
     식비("식비"),

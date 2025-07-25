@@ -1,11 +1,10 @@
-package com.external.api.mapper;
+package com.external.asset.mapper;
 
-import com.external.api.domain.Composition;
-import com.external.api.domain.Snapshot;
-import com.external.api.domain.Withdrawal;
+import com.external.asset.domain.Composition;
+import com.external.asset.domain.Snapshot;
+import com.external.asset.domain.Withdrawal;
 import org.apache.ibatis.annotations.Param;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public interface DummyMapper {

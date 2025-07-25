@@ -67,6 +67,9 @@ CREATE INDEX idx_composition_user ON composition_pools(user_id);
 select * from users;
 delete from users;
 
+-- user_assets 초기화
+delete from user_assets;
+
 -- 매핑 테스트
 SELECT * FROM user_assets;
 INSERT INTO user_assets (user_id) VALUES (1);
@@ -88,6 +91,3 @@ WHERE user_id = 1;
 UPDATE composition_pools
 SET user_id = NULL
 WHERE user_id = 1;
-
--- user_assets 초기화
-delete from user_assets;
