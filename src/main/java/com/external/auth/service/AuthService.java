@@ -50,14 +50,14 @@ public class AuthService {
             throw new UnauthorizedException("토큰이 유효하지 않습니다.");
         }
         Long userId = jwtUtil.getUserId(accessToken);
-        User user = authMapper.findByUserId(userId);
+        String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
 
-        if(user == null) {
+        if(fintechUseNum == null) {
             throw new UnauthorizedException("유효하지 않은 핀테크 이용번호입니다.");
         }
 
+        User user = authMapper.findUserByUserId(userId);
         String refreshToken = redisUtil.getValue("refresh:user:" + user.getUserId());
-        String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
         return TraineePortfolioCreateResponseDTO.create(accessToken, refreshToken, fintechUseNum);
     }
 

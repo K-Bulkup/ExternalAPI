@@ -9,7 +9,7 @@ public interface AuthMapper {
 
     void createUserAsset(Long userId);
 
-    User findByUserId(Long userId);
+    User findUserByUserId(Long userId);
 
     String findFintechUseNumByUserId(Long userId);
 }
