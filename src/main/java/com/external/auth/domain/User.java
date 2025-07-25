@@ -1,22 +1,20 @@
 package com.external.auth.domain;
 
-import lombok.*;
-
-import java.math.BigInteger;
-
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder
-public class UserVO {
-    private BigInteger userId;
+public class User {
+    private Long userId;
     private String bank;
     private String accountNum;
     private String fintechUseNum;
 
-    public static UserVO createUserVO(BigInteger userId, String accountNum, String bank, String fintechUseNum) {
-        return UserVO.builder()
+    public static User create(Long userId, String accountNum, Bank bank, String fintechUseNum) {
+        return User.builder()
                 .userId(userId)
-                .bank(bank)
+                .bank(bank.toDbValue())
                 .accountNum(accountNum)
                 .fintechUseNum(fintechUseNum).build();
     }

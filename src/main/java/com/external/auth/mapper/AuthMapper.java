@@ -1,17 +1,15 @@
 package com.external.auth.mapper;
 
-import com.external.auth.domain.UserVO;
+import com.external.auth.domain.User;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.math.BigInteger;
 
 @Mapper
 public interface AuthMapper {
-    void createUser(UserVO userVO);
+    void createUser(User user);
 
-    void createUserAsset(BigInteger userId);
+    void createUserAsset(Long userId);
 
-    UserVO findByUserId(BigInteger userId);
+    User findByUserId(Long userId);
 
-    String findFintechUseNumByUserId(BigInteger userId);
+    String findFintechUseNumByUserId(Long userId);
 }

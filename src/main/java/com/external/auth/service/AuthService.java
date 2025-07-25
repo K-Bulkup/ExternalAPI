@@ -1,62 +1,56 @@
 package com.external.auth.service;
 
-import com.external.auth.domain.UserVO;
-import com.external.auth.dto.TokenCreateResponseDTO;
+import com.external.auth.domain.Bank;
+import com.external.auth.domain.User;
+import com.external.auth.dto.TraineePortfolioCreateResponseDTO;
 import com.external.auth.exception.UnauthorizedException;
 import com.external.auth.mapper.AuthMapper;
 import com.external.auth.util.JwtUtil;
 import com.external.auth.util.RefreshUtil;
 import com.external.auth.util.RedisUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigInteger;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     static private final Long expireDuration = 3456000L; // Redis 만료기간 40일
 
-    @Autowired
-    private AuthMapper authMapper;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private RefreshUtil refreshUtil;
-
-    @Autowired
-    private RedisUtil redisUtil;
+    private final AuthMapper authMapper;
+    private final JwtUtil jwtUtil;
+    private final RefreshUtil refreshUtil;
+    private final RedisUtil redisUtil;
 
     @Transactional
-    public TokenCreateResponseDTO createFintechUseNum(BigInteger userId, String bank, String accountNum) {
+    public TraineePortfolioCreateResponseDTO createFintechUseNum(Long userId, Bank bank, String accountNum) {
         String fintechUseNum = UUID.randomUUID().toString();
 
-        UserVO userVO = UserVO.createUserVO(userId, accountNum, bank, fintechUseNum);
-        authMapper.createUser(userVO);
+        User user = User.create(userId, accountNum, bank, fintechUseNum);
+        authMapper.createUser(user);
         authMapper.createUserAsset(userId);
         String refreshToken = createRefreshToken(userId);
         String accessToken = jwtUtil.generateToken(userId);
 
-        return new TokenCreateResponseDTO(accessToken, refreshToken, fintechUseNum);
+        return TraineePortfolioCreateResponseDTO.create(accessToken, refreshToken, fintechUseNum);
     }
 
-    private String createRefreshToken(BigInteger userId) {
+    private String createRefreshToken(Long userId) {
         String refreshToken = refreshUtil.generateRefreshToken();
         redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
         return refreshToken;
     }
 
     @Transactional
-    public TokenCreateResponseDTO validateAndGetUser(String accessToken) {
+    public TraineePortfolioCreateResponseDTO validateAndGetUser(String accessToken) {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnauthorizedException("토큰이 유효하지 않습니다.");
         }
-        BigInteger userId = jwtUtil.getUserId(accessToken);
-        UserVO user = authMapper.findByUserId(userId);
+        Long userId = jwtUtil.getUserId(accessToken);
+        User user = authMapper.findByUserId(userId);
 
         if(user == null) {
             throw new UnauthorizedException("유효하지 않은 핀테크 이용번호입니다.");
@@ -64,11 +58,11 @@ public class AuthService {
 
         String refreshToken = redisUtil.getValue("refresh:user:" + user.getUserId());
         String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
-        return new TokenCreateResponseDTO(accessToken, refreshToken, fintechUseNum);
+        return TraineePortfolioCreateResponseDTO.create(accessToken, refreshToken, fintechUseNum);
     }
 
     @Transactional
-    public TokenCreateResponseDTO getNewAccessTokenByUserId(String refreshToken, BigInteger userId) {
+    public TraineePortfolioCreateResponseDTO getNewAccessTokenByUserId(String refreshToken, Long userId) {
 
         // 1. Redis에서 저장된 리프레시 토큰 조회
         String storedRefreshToken = redisUtil.getValue("refresh:user:" + userId);
@@ -85,7 +79,7 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateToken(userId);
         String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
 
-        return new TokenCreateResponseDTO(newAccessToken, refreshToken, fintechUseNum);
+        return TraineePortfolioCreateResponseDTO.create(newAccessToken, refreshToken, fintechUseNum);
     }
 
 }
