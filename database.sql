@@ -68,11 +68,11 @@ select * from users;
 delete from users;
 
 -- 매핑 테스트
-SELECT * FROM user_assets WHERE user_id = 1;
+SELECT * FROM user_assets;
 INSERT INTO user_assets (user_id) VALUES (1);
 
-select count(*) from snapshot_pools where user_id = 1;
-select count(*) from withdrawal_pools where user_id = 1;
+select count(*) from snapshot_pools where user_id = 1; #10 ~ 30
+select count(*) from withdrawal_pools where user_id = 1; #20 ~ 50
 
 -- 1. snapshot_pools 초기화
 UPDATE snapshot_pools
