@@ -5,6 +5,12 @@
 
 <mapper namespace="com.external.api.mapper.DummyMapper">
 
+    <select id="getMappableSnapshotCount" resultType="int">
+        SELECT COUNT(DISTINCT snapshot_date)
+        FROM snapshot_pools
+        WHERE user_id IS NULL
+    </select>
+
     <select id="pickRandom" resultType="com.external.api.domain.Snapshot">
         SELECT *
         FROM snapshot_pools
@@ -17,8 +23,7 @@
                 GROUP BY snapshot_date
             ) AS temp
         )
-        ORDER BY RAND()
-        LIMIT #{count}
+        LIMIT #{count} OFFSET #{offset}
     </select>
 
     <!-- ✅ 출금 내역 조회 (ENUM 매핑 포함) -->
@@ -35,11 +40,30 @@
         SELECT * FROM withdrawal_pools WHERE user_id IS NULL
     </select>
 
+    <select id="getMappableWithdrawalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM withdrawal_pools
+        WHERE user_id IS NULL AND amount <![CDATA[ < ]]> #{cap}
+    </select>
+
+    <select id="pickRandomWithdrawals" resultMap="WithdrawalResultMap">
+        SELECT *
+        FROM withdrawal_pools
+        WHERE user_id IS NULL AND amount <![CDATA[ < ]]> #{cap}
+        LIMIT #{count} OFFSET #{offset}
+    </select>
+
+    <select id="getMappableCompositionCount" resultType="int">
+        SELECT COUNT(*)
+        FROM composition_pools
+        WHERE user_id IS NULL
+    </select>
+
     <select id="pickOneRandom" resultType="com.external.api.domain.Composition">
         SELECT *
         FROM composition_pools
         WHERE user_id IS NULL
-        ORDER BY RAND() LIMIT 1
+        LIMIT 1 OFFSET #{offset}
     </select>
 
 </mapper>

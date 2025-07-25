@@ -32,9 +32,10 @@ public class MappingService {
     @Transactional
     public void mapDummyDataToUser(BigInteger userId) {
         // 1. 자산 추이 가져오기 (랜덤 10~30개)
-        int randomCount = ThreadLocalRandom.current().nextInt(10, 31);
-        log.info("snapshot randomCount 값: {}", randomCount);
-        List<Snapshot> snapshots = dummyMapper.pickRandom(randomCount);
+        int mappableSnapshotCount = dummyMapper.getMappableSnapshotCount();
+        int randomSnapshotCount = ThreadLocalRandom.current().nextInt(10, 31);
+        int randomSnapshotOffset = ThreadLocalRandom.current().nextInt(0, mappableSnapshotCount - randomSnapshotCount + 1);
+        List<Snapshot> snapshots = dummyMapper.pickRandom(randomSnapshotCount, randomSnapshotOffset);
         long minAssetAmount = snapshots.stream()
                 .mapToLong(s -> s.getBalance().longValue())
                 .min()
@@ -43,41 +44,21 @@ public class MappingService {
         // 2. 출금 상한 설정
         long withdrawalCap = (long) (minAssetAmount * WITHDRAWAL_CAP_RATIO);
 
-        // 3. 출금 내역 중 유효한 범위만 필터링
-        List<Withdrawal> allWithdrawals = dummyMapper.getAll();
-        List<Withdrawal> validWithdrawals = pickWithdrawalsWithinCap(allWithdrawals, BigInteger.valueOf(withdrawalCap));
+        // 3. 출금 내역 가져오기 (랜덤 20~50개)
+        int mappableWithdrawalCount = dummyMapper.getMappableWithdrawalCount(withdrawalCap);
+        int randomWithdrawalCount = ThreadLocalRandom.current().nextInt(20, 51);
+        int randomWithdrawalOffset = ThreadLocalRandom.current().nextInt(0, mappableWithdrawalCount - randomWithdrawalCount + 1);
+        List<Withdrawal> validWithdrawals = dummyMapper.pickRandomWithdrawals(withdrawalCap, randomWithdrawalCount, randomWithdrawalOffset);
 
         // 4. 자산 구성 하나 선택
-        Composition composition = dummyMapper.pickOneRandom();
+        int mappableCompositionCount = dummyMapper.getMappableCompositionCount();
+        int randomCompositionOffset = ThreadLocalRandom.current().nextInt(0, mappableCompositionCount);
+        Composition composition = dummyMapper.pickOneRandom(randomCompositionOffset);
 
         // 5. 매핑 실행
         userAssetMapper.assignSnapshotPools(userId, snapshots);
         userAssetMapper.assignWithdrawalPools(userId, validWithdrawals);
         userAssetMapper.assignCompositionPool(userId, composition);
-    }
-
-    private List<Withdrawal> pickWithdrawalsWithinCap(List<Withdrawal> allWithdrawals, BigInteger cap) {
-        int randomCount = ThreadLocalRandom.current().nextInt(20, 51);
-        log.info("withdrawal randomCount 값: {}", randomCount);
-        List<Withdrawal> result = new ArrayList<>();
-        BigInteger total = BigInteger.ZERO;
-
-        Collections.shuffle(allWithdrawals);
-
-        for (Withdrawal w : allWithdrawals) {
-            BigInteger amount = w.getAmount();
-
-            if (total.add(amount).compareTo(cap) <= 0) {
-                result.add(w);
-                total = total.add(amount);
-            }
-
-            if (total.compareTo(cap) >= 0 || result.size() >= randomCount) {
-                break;
-            }
-        }
-
-        return result;
     }
 
 }
