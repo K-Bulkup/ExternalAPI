@@ -3,9 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.external.auth.mapper.UserMapper">
+<mapper namespace="com.external.user.mapper.UserMapper">
 
-    <insert id="createUser" parameterType="com.external.auth.domain.User">
+    <insert id="createUser" parameterType="com.external.user.domain.User">
         INSERT INTO users (user_id, bank, account_num, fintech_use_num)
         VALUES (#{userId}, #{bank}, #{accountNum}, #{fintechUseNum})
     </insert>
@@ -14,7 +14,7 @@
         INSERT INTO user_assets (user_id) VALUES (#{userId})
     </insert>
 
-    <select id="findUserByUserId" resultType="com.external.auth.domain.User" parameterType="java.lang.Long">
+    <select id="findUserByUserId" resultType="com.external.user.domain.User" parameterType="java.lang.Long">
         SELECT * FROM users
         WHERE user_id = #{userId}
     </select>
