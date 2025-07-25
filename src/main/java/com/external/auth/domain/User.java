@@ -11,7 +11,7 @@ public class User {
     private String accountNum;
     private String fintechUseNum;
 
-    public static User createUser(Long userId, String accountNum, Bank bank, String fintechUseNum) {
+    public static User create(Long userId, String accountNum, Bank bank, String fintechUseNum) {
         return User.builder()
                 .userId(userId)
                 .bank(bank.toDbValue())

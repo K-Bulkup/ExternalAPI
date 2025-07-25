@@ -8,40 +8,34 @@ import com.external.auth.mapper.AuthMapper;
 import com.external.auth.util.JwtUtil;
 import com.external.auth.util.RefreshUtil;
 import com.external.auth.util.RedisUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     static private final Long expireDuration = 3456000L; // Redis 만료기간 40일
 
-    @Autowired
-    private AuthMapper authMapper;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private RefreshUtil refreshUtil;
-
-    @Autowired
-    private RedisUtil redisUtil;
+    private final AuthMapper authMapper;
+    private final JwtUtil jwtUtil;
+    private final RefreshUtil refreshUtil;
+    private final RedisUtil redisUtil;
 
     @Transactional
     public TraineePortfolioCreateResponseDTO createFintechUseNum(Long userId, Bank bank, String accountNum) {
         String fintechUseNum = UUID.randomUUID().toString();
 
-        User user = User.createUser(userId, accountNum, bank, fintechUseNum);
+        User user = User.create(userId, accountNum, bank, fintechUseNum);
         authMapper.createUser(user);
         authMapper.createUserAsset(userId);
         String refreshToken = createRefreshToken(userId);
         String accessToken = jwtUtil.generateToken(userId);
 
-        return TraineePortfolioCreateResponseDTO.from(accessToken, refreshToken, fintechUseNum);
+        return TraineePortfolioCreateResponseDTO.create(accessToken, refreshToken, fintechUseNum);
     }
 
     private String createRefreshToken(Long userId) {
@@ -64,7 +58,7 @@ public class AuthService {
 
         String refreshToken = redisUtil.getValue("refresh:user:" + user.getUserId());
         String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
-        return TraineePortfolioCreateResponseDTO.from(accessToken, refreshToken, fintechUseNum);
+        return TraineePortfolioCreateResponseDTO.create(accessToken, refreshToken, fintechUseNum);
     }
 
     @Transactional
@@ -85,7 +79,7 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateToken(userId);
         String fintechUseNum = authMapper.findFintechUseNumByUserId(userId);
 
-        return TraineePortfolioCreateResponseDTO.from(newAccessToken, refreshToken, fintechUseNum);
+        return TraineePortfolioCreateResponseDTO.create(newAccessToken, refreshToken, fintechUseNum);
     }
 
 }
