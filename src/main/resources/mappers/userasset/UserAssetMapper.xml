@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.external.api.mapper.UserAssetMapper">
+<mapper namespace="com.external.portfolio.mapper.UserAssetMapper">
 
     <update id="assignSnapshotPools">
         UPDATE snapshot_pools
@@ -41,21 +41,21 @@
         WHERE composition_id = #{composition.compositionId}
     </update>
 
-    <select id="findSnapshotsByUserId" resultType="com.external.api.domain.Snapshot">
+    <select id="findSnapshotsByUserId" resultType="com.external.portfolio.domain.Snapshot">
         SELECT *
         FROM snapshot_pools
         WHERE user_id = #{userId}
         ORDER BY snapshot_date DESC
     </select>
 
-    <select id="findWithdrawalsByUserId" resultType="com.external.api.domain.Withdrawal">
+    <select id="findWithdrawalsByUserId" resultType="com.external.portfolio.domain.Withdrawal">
         SELECT *
         FROM withdrawal_pools
         WHERE user_id = #{userId}
         ORDER BY transaction_date DESC
     </select>
 
-    <select id="findCompositionByUserId" resultType="com.external.api.domain.Composition">
+    <select id="findCompositionByUserId" resultType="com.external.portfolio.domain.Composition">
         SELECT *
         FROM composition_pools
         WHERE user_id = #{userId} LIMIT 1
