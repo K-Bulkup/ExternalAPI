@@ -1,8 +1,6 @@
 package com.external.user.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import java.util.Date;
@@ -29,6 +27,8 @@ public class JwtUtil {
     }
 
     public Long getUserId(String token) {
+        //Bearer
+        token = token.replace("Bearer ", "").trim();
         Claims claims = Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -38,10 +38,14 @@ public class JwtUtil {
     }
 
     public boolean validateToken(String token) {
+        // Bearer
+        token = token.replace("Bearer ", "").trim();
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
-        } catch (Exception e) {
+        } catch (ExpiredJwtException e) {
+            return false;
+        } catch (JwtException | IllegalArgumentException e) {
             // MalformedJwtException, ExpiredJwtException, etc.
             return false;
         }

@@ -5,8 +5,10 @@ import com.external.portfolio.domain.Snapshot;
 import com.external.portfolio.domain.Withdrawal;
 import com.external.portfolio.mapper.DummyMapper;
 import com.external.portfolio.mapper.UserAssetMapper;
+import com.external.user.service.UserService;
+import com.external.user.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,19 +17,24 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MappingDataService {
 
     // 출금 상한 비율
     private static final double WITHDRAWAL_CAP_RATIO = 1.1;
 
-    @Autowired
-    private DummyMapper dummyMapper;
-
-    @Autowired
-    private UserAssetMapper userAssetMapper;
+    private final UserService userService;
+    private final DummyMapper dummyMapper;
+    private final UserAssetMapper userAssetMapper;
+    private final JwtUtil jwtUtil;
 
     @Transactional
-    public void mapDummyDataToUser(Long userId) {
+    public void mapDummyDataToUser(String authorization) {
+
+        //0. 사용자 인증
+        Long userId = jwtUtil.getUserId(authorization);
+        userService.validateUserAuth(authorization);
+
         // 1. 자산 추이 가져오기 (랜덤 10~30개)
         int mappableSnapshotCount = dummyMapper.getMappableSnapshotCount();
         int randomSnapshotCount = ThreadLocalRandom.current().nextInt(10, 31);
