@@ -36,7 +36,7 @@ public class UserService {
         AuthResponseDTO resDTO = createUserAuth(userId);
         User user = User.create(userId, reqDTO.getAccountNum(), reqDTO.getBank(), resDTO.getFintechUseNum());
         userMapper.createUser(user);
-        userMapper.createUserAsset(userId);
+        userMapper.createPortfolio(userId);
 
         return resDTO;
     }

@@ -2,7 +2,8 @@ package com.external.portfolio.service;
 
 import com.external.portfolio.domain.Composition;
 import com.external.portfolio.domain.Snapshot;
-import com.external.portfolio.domain.Withdrawal;
+import com.external.portfolio.domain.Transaction;
+import com.external.portfolio.domain.TransactionType;
 import com.external.portfolio.mapper.DummyMapper;
 import com.external.portfolio.mapper.UserAssetMapper;
 import com.external.user.service.UserService;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -31,37 +34,33 @@ public class MappingDataService {
     @Transactional
     public void mapDummyDataToUser(String authorization) {
 
-        //0. 사용자 인증
         Long userId = jwtUtil.getUserId(authorization);
         userService.validateUserAuth(authorization);
 
-        // 1. 자산 추이 가져오기 (랜덤 10~30개)
-        int mappableSnapshotCount = dummyMapper.getMappableSnapshotCount();
-        int randomSnapshotCount = ThreadLocalRandom.current().nextInt(10, 31);
-        int randomSnapshotOffset = ThreadLocalRandom.current().nextInt(0, mappableSnapshotCount - randomSnapshotCount + 1);
-        List<Snapshot> snapshots = dummyMapper.pickRandom(randomSnapshotCount, randomSnapshotOffset);
-        long minAssetAmount = snapshots.stream()
-                .mapToLong(s -> s.getBalance().longValue())
-                .min()
-                .orElse(0L);
+        final int COUNT = ThreadLocalRandom.current().nextInt(10, 21);
+        final int OFFSET = ThreadLocalRandom.current().nextInt(0, dummyMapper.getMappableTransactionCount() - COUNT + 1);
 
-        // 2. 출금 상한 설정
-        long withdrawalCap = (long) (minAssetAmount * WITHDRAWAL_CAP_RATIO);
+        List<Transaction> transactions = dummyMapper.pickRandomTransactions(COUNT, OFFSET);
+        userAssetMapper.assignTransactionPools(userId, transactions);
 
-        // 3. 출금 내역 가져오기 (랜덤 20~50개)
-        int mappableWithdrawalCount = dummyMapper.getMappableWithdrawalCount(withdrawalCap);
-        int randomWithdrawalCount = ThreadLocalRandom.current().nextInt(20, 51);
-        int randomWithdrawalOffset = ThreadLocalRandom.current().nextInt(0, mappableWithdrawalCount - randomWithdrawalCount + 1);
-        List<Withdrawal> validWithdrawals = dummyMapper.pickRandomWithdrawals(withdrawalCap, randomWithdrawalCount, randomWithdrawalOffset);
+        transactions.sort(Comparator.comparing(Transaction::getTranDate));
+        List<Snapshot> snapshots = new ArrayList<>();
+        long balance = 10_000_000L;
 
-        // 4. 자산 구성 하나 선택
+        for (Transaction tx : transactions) {
+            if (tx.getTransactionType() == TransactionType.입금 ) {
+                balance += tx.getAmount();
+            } else {
+                balance -= tx.getAmount();
+            }
+
+            snapshots.add(Snapshot.create(userId, balance, tx.getTranDate()));
+        }
+        userAssetMapper.assignSnapshotPools(userId, snapshots);
+
         int mappableCompositionCount = dummyMapper.getMappableCompositionCount();
         int randomCompositionOffset = ThreadLocalRandom.current().nextInt(0, mappableCompositionCount);
         Composition composition = dummyMapper.pickOneRandom(randomCompositionOffset);
-
-        // 5. 매핑 실행
-        userAssetMapper.assignSnapshotPools(userId, snapshots);
-        userAssetMapper.assignWithdrawalPools(userId, validWithdrawals);
         userAssetMapper.assignCompositionPool(userId, composition);
     }
 

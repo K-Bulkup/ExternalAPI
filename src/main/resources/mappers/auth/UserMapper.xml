@@ -10,14 +10,9 @@
         VALUES (#{userId}, #{bank}, #{accountNum}, #{fintechUseNum})
     </insert>
 
-    <insert id="createUserAsset">
-        INSERT INTO user_assets (user_id) VALUES (#{userId})
+    <insert id="createPortfolio">
+        INSERT INTO portfolios (user_id) VALUES (#{userId})
     </insert>
-
-    <select id="findUserByUserId" resultType="com.external.user.domain.User" parameterType="java.lang.Long">
-        SELECT * FROM users
-        WHERE user_id = #{userId}
-    </select>
 
     <select id="findFintechUseNumByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT fintech_use_num
