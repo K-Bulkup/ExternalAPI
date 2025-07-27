@@ -5,53 +5,19 @@
 
 <mapper namespace="com.external.portfolio.mapper.DummyMapper">
 
-    <select id="getMappableSnapshotCount" resultType="int">
-        SELECT COUNT(DISTINCT snapshot_date)
-        FROM snapshot_pools
-        WHERE user_id IS NULL
-    </select>
-
-    <select id="pickRandom" resultType="com.external.portfolio.domain.Snapshot">
-        SELECT *
-        FROM snapshot_pools
-        WHERE snapshot_id IN (
-            SELECT snapshot_id
-            FROM (
-                SELECT MIN(snapshot_id) AS snapshot_id
-                FROM snapshot_pools
-                WHERE user_id IS NULL
-                GROUP BY snapshot_date
-            ) AS temp
-        )
-        LIMIT #{count} OFFSET #{offset}
-    </select>
 
     <!-- ✅ 출금 내역 조회 (ENUM 매핑 포함) -->
-    <resultMap id="WithdrawalResultMap" type="com.external.portfolio.domain.Withdrawal">
+    <resultMap id="TransactionResultMap" type="com.external.portfolio.domain.Transaction">
         <id property="transactionId" column="transaction_id"/>
         <result property="userId" column="user_id"/>
+        <result property="transactionType" column="transaction_type"
+                typeHandler="com.external.portfolio.handler.TransactionTypeTypeHandler"/>
         <result property="amount" column="amount"/>
         <result property="transactionCategory" column="transaction_category"
-                typeHandler="com.external.portfolio.handler.WithdrawalCategoryTypeHandler"/>
-        <result property="tranDate" column="transaction_date"/>
+                typeHandler="com.external.portfolio.handler.TransactionCategoryTypeHandler"/>
+        <result property="tranDate" column="tran_date"/>
     </resultMap>
 
-    <select id="getAll" resultMap="WithdrawalResultMap">
-        SELECT * FROM withdrawal_pools WHERE user_id IS NULL
-    </select>
-
-    <select id="getMappableWithdrawalCount" resultType="int">
-        SELECT COUNT(*)
-        FROM withdrawal_pools
-        WHERE user_id IS NULL AND amount <![CDATA[ < ]]> #{cap}
-    </select>
-
-    <select id="pickRandomWithdrawals" resultMap="WithdrawalResultMap">
-        SELECT *
-        FROM withdrawal_pools
-        WHERE user_id IS NULL AND amount <![CDATA[ < ]]> #{cap}
-        LIMIT #{count} OFFSET #{offset}
-    </select>
 
     <select id="getMappableCompositionCount" resultType="int">
         SELECT COUNT(*)
@@ -64,6 +30,19 @@
         FROM composition_pools
         WHERE user_id IS NULL
         LIMIT 1 OFFSET #{offset}
+    </select>
+
+    <select id="pickRandomTransactions" resultMap="TransactionResultMap">
+        SELECT *
+        FROM transaction_pools
+        WHERE user_id IS NULL
+        LIMIT #{count} OFFSET #{offset}
+    </select>
+
+    <select id="getMappableTransactionCount" resultType="int">
+        SELECT COUNT(*)
+        FROM transaction_pools
+        WHERE user_id IS NULL
     </select>
 
 </mapper>

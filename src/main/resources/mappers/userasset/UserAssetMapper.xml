@@ -5,42 +5,6 @@
 
 <mapper namespace="com.external.portfolio.mapper.UserAssetMapper">
 
-    <update id="assignSnapshotPools">
-        UPDATE snapshot_pools
-        SET user_id = #{userId}
-        WHERE snapshot_id IN (
-        SELECT snapshot_id FROM (
-        SELECT sp.snapshot_id
-        FROM snapshot_pools sp
-        WHERE sp.user_id IS NULL
-        AND sp.snapshot_date NOT IN (
-        SELECT snapshot_date FROM snapshot_pools WHERE user_id = #{userId}
-        )
-        AND sp.snapshot_id IN
-        <foreach item="snapshot" collection="snapshots" open="(" separator="," close=")">
-            #{snapshot.snapshotId}
-        </foreach>
-        ) temp
-        )
-    </update>
-
-
-    <update id="assignWithdrawalPools">
-        UPDATE withdrawal_pools
-        SET user_id = #{userId}
-        WHERE transaction_id IN
-        <foreach item="withdrawal" collection="withdrawals" open="(" separator="," close=")">
-            #{withdrawal.transactionId}
-        </foreach>
-        AND user_id IS NULL
-    </update>
-
-    <update id="assignCompositionPool">
-        UPDATE composition_pools
-        SET user_id = #{userId}
-        WHERE composition_id = #{composition.compositionId}
-    </update>
-
     <select id="findSnapshotsByUserId" resultType="com.external.portfolio.domain.Snapshot">
         SELECT *
         FROM snapshot_pools
@@ -48,11 +12,11 @@
         ORDER BY snapshot_date DESC
     </select>
 
-    <select id="findWithdrawalsByUserId" resultType="com.external.portfolio.domain.Withdrawal">
+    <select id="findTransactionByUserId" resultType="com.external.portfolio.domain.Transaction">
         SELECT *
-        FROM withdrawal_pools
+        FROM transaction_pools
         WHERE user_id = #{userId}
-        ORDER BY transaction_date DESC
+        ORDER BY tran_date DESC
     </select>
 
     <select id="findCompositionByUserId" resultType="com.external.portfolio.domain.Composition">
@@ -60,5 +24,29 @@
         FROM composition_pools
         WHERE user_id = #{userId} LIMIT 1
     </select>
+
+    <update id="assignTransactionPools">
+        UPDATE transaction_pools
+        SET user_id = #{userId}
+        WHERE transaction_id IN
+        <foreach item="transaction" collection="transactions" open="(" separator="," close=")">
+            #{transaction.transactionId}
+        </foreach>
+        AND user_id IS NULL
+    </update>
+
+    <insert id="assignSnapshotPools">
+        INSERT INTO snapshot_pools (user_id, balance, snapshot_date)
+        VALUES
+        <foreach collection="snapshots" item="snapshot" separator=",">
+            (#{userId}, #{snapshot.balance}, #{snapshot.snapshotDate})
+        </foreach>
+    </insert>
+
+    <update id="assignCompositionPool">
+        UPDATE composition_pools
+        SET user_id = #{userId}
+        WHERE composition_id = #{composition.compositionId}
+    </update>
 
 </mapper>

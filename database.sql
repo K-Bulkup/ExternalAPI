@@ -1,93 +1,81 @@
--- 0. 유저 테이블
-CREATE TABLE `Users` ( 
+-- ✅ USERS
+CREATE TABLE `users` (
                          `user_id` BIGINT NOT NULL,
                          `bank` ENUM('국민은행', '신한은행', '카카오뱅크', '토스뱅크', '농협', '우리은행', '하나은행', '기타') NOT NULL,
                          `account_num` VARCHAR(50) NULL,
                          `fintech_use_num` VARCHAR(100) NULL,
-                         # `refresh_token` VARCHAR(100) NULL,
                          `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                          CONSTRAINT `PK_USERS` PRIMARY KEY (`user_id`)
 );
 
--- 1. 유저 자산 테이블
-CREATE TABLE `user_assets` (
+-- ✅ PORTFOLIOS
+CREATE TABLE `portfolios` (
                               `user_id` BIGINT NOT NULL,
-                              CONSTRAINT `PK_USERASSETS` PRIMARY KEY (`user_id`),
-                              CONSTRAINT `FK_Users_TO_UserAssets_1` FOREIGN KEY (`user_id`)
-                                  REFERENCES `Users` (`user_id`)
-                                  ON DELETE CASCADE
+                              CONSTRAINT `PK_PORTFOLIOS` PRIMARY KEY (`user_id`),
+                              CONSTRAINT `FK_users_TO_portfolios` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE
 );
 
--- 2. 자산 추이 더미 테이블
+-- ✅ TRANSACTION_POOLS
+CREATE TABLE `transaction_pools` (
+                                     `transaction_id` BIGINT NOT NULL,
+                                     `user_id` BIGINT NULL,
+                                     `transaction_type` ENUM('입금', '출금') NULL,
+                                     `amount` BIGINT NOT NULL,
+                                     `transaction_category` ENUM(
+                                         '식비', '교통비', '주거/공과금', '생필품',
+                                         '의료/건강', '패션/미용', '문화생활/여가', '기타',
+                                         '월급', '부수입'
+                                         ) NULL,
+                                     `tran_date` DATETIME NULL,
+                                     CONSTRAINT `PK_TRANSACTION_POOLS` PRIMARY KEY (`transaction_id`),
+                                     CONSTRAINT `FK_users_TO_transaction_pools` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE
+);
+
+-- ✅ SNAPSHOT_POOLS
 CREATE TABLE `snapshot_pools` (
-                                 `snapshot_id` BIGINT NOT NULL,
-                                 `user_id` BIGINT,
-                                 `balance` BIGINT NOT NULL,
-                                 `snapshot_date` DATETIME NOT NULL,
-                                 CONSTRAINT `PK_SNAPSHOTPOOLS` PRIMARY KEY (`snapshot_id`),
-                                 CONSTRAINT `FK_snapshot_UserAssets` FOREIGN KEY (`user_id`)
-                                     REFERENCES `user_assets` (`user_id`)
-                                     ON DELETE CASCADE,
-                                 CONSTRAINT `UQ_user_snapshot` UNIQUE (`user_id`, `snapshot_date`)
+                                  `snapshot_id` BIGINT NOT NULL AUTO_INCREMENT,
+                                  `user_id` BIGINT NULL,
+                                  `balance` BIGINT NULL,
+                                  `snapshot_date` DATETIME NULL,
+                                  CONSTRAINT `PK_SNAPSHOT_POOLS` PRIMARY KEY (`snapshot_id`),
+                                  CONSTRAINT `FK_users_TO_snapshot_pools` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE
 );
 
--- 3. 자산 구성 테이블
+-- ✅ COMPOSITION_POOLS
 CREATE TABLE `composition_pools` (
-                                    `composition_id` BIGINT NOT NULL,
-                                    `user_id` BIGINT,
-                                    `asset_composition` JSON NOT NULL,
-                                    CONSTRAINT `PK_COMPOSITIONPOOLS` PRIMARY KEY (`composition_id`),
-                                    CONSTRAINT `FK_composition_UserAssets` FOREIGN KEY (`user_id`)
-                                        REFERENCES `user_assets` (`user_id`)
-                                        ON DELETE CASCADE
+                                     `composition_id` BIGINT NOT NULL,
+                                     `user_id` BIGINT NULL,
+                                     `asset_composition` JSON NOT NULL,
+                                     CONSTRAINT `PK_COMPOSITION_POOLS` PRIMARY KEY (`composition_id`),
+                                     CONSTRAINT `FK_users_TO_composition_pools` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
 );
 
--- 4. 출금 내역 테이블
-CREATE TABLE `withdrawal_pools` (
-                                   `transaction_id` BIGINT NOT NULL,
-                                   `user_id` BIGINT,
-                                   `amount` BIGINT NOT NULL,
-                                   `transaction_category` ENUM(
-                                        '식비', '교통비', '주거/공과금', '생필품',
-                                        '의료/건강', '패션/미용', '문화생활/여가', '기타'
-                                    ) NOT NULL,
-                                   `transaction_date` DATETIME NOT NULL,
-                                   CONSTRAINT `PK_WITHDRAWALPOOLS` PRIMARY KEY (`transaction_id`),
-                                   CONSTRAINT `FK_withdrawal_UserAssets` FOREIGN KEY (`user_id`)
-                                       REFERENCES `user_assets` (`user_id`)
-                                       ON DELETE CASCADE
-);
+-- 거래 내역 관련 인덱스
+CREATE INDEX idx_transaction_user ON transaction_pools(user_id);
+CREATE INDEX idx_transaction_date ON transaction_pools(tran_date);
 
--- 인덱스 생성
+-- 자산 추이 관련 인덱스
 CREATE INDEX idx_snapshot_user ON snapshot_pools(user_id);
-CREATE INDEX idx_withdrawal_user ON withdrawal_pools(user_id);
+CREATE INDEX idx_snapshot_date ON snapshot_pools(snapshot_date);
+
+-- 자산 구성 인덱스
 CREATE INDEX idx_composition_user ON composition_pools(user_id);
+
+-- 핀테크번호는 유니크 인덱스 권장
+CREATE UNIQUE INDEX idx_users_fintech_use_num ON users(fintech_use_num);
+
+DELETE FROM portfolios;
+
+UPDATE transaction_pools
+SET user_id = NULL
+WHERE user_id = 1;
+
+UPDATE composition_pools
+SET user_id = NULL
+WHERE user_id = 1;
+
+DELETE FROM snapshot_pools;
 
 -- 토큰 테스트
 select * from users;
 delete from users;
-
--- user_assets 초기화
-delete from user_assets;
-
--- 매핑 테스트
-SELECT * FROM user_assets;
-INSERT INTO user_assets (user_id) VALUES (1);
-
-select count(*) from snapshot_pools where user_id = 1; #10 ~ 30
-select count(*) from withdrawal_pools where user_id = 1; #20 ~ 50
-
--- 1. snapshot_pools 초기화
-UPDATE snapshot_pools
-SET user_id = NULL
-WHERE user_id = 1;
-
--- 2. withdrawal_pools 초기화
-UPDATE withdrawal_pools
-SET user_id = NULL
-WHERE user_id = 1;
-
--- 3. composition_pools 초기화
-UPDATE composition_pools
-SET user_id = NULL
-WHERE user_id = 1;
