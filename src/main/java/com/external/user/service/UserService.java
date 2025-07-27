@@ -1,7 +1,7 @@
 package com.external.user.service;
 
 import com.external.user.domain.User;
-import com.external.user.dto.AuthDTO;
+import com.external.user.dto.response.AuthResponseDTO;
 import com.external.user.dto.request.TraineePortfolioCreateRequestDTO;
 import com.external.user.exception.UnauthorizedException;
 import com.external.user.mapper.UserMapper;
@@ -26,28 +26,33 @@ public class UserService {
     private final RedisUtil redisUtil;
 
     public Long getUserId(String token) {
-        return jwtUtil.getUserId(token.replace("Bearer ", ""));
+        return jwtUtil.getUserId(token.replace("Bearer ", "").trim());
     }
 
     @Transactional
-    public String createUser(Long userId, TraineePortfolioCreateRequestDTO dto) {
-        String fintechUseNum = UUID.randomUUID().toString();
-        User user = User.create(userId, dto.getAccountNum(), dto.getBank(), fintechUseNum);
-        //String accessToken = jwtUtil.generateToken(userId);
-        //createRefreshToken(userId);
+    public AuthResponseDTO createUser(String authorization, TraineePortfolioCreateRequestDTO reqDTO) {
+        // jwtUtil.getUserId(authorization); 로그인 구현 시 활성화
+        Long userId = 1L;
+        AuthResponseDTO resDTO = createUserAuth(userId);
+        User user = User.create(userId, reqDTO.getAccountNum(), reqDTO.getBank(), resDTO.getFintechUseNum());
         userMapper.createUser(user);
         userMapper.createUserAsset(userId);
 
-        return fintechUseNum;
+        return resDTO;
     }
 
-    private void createRefreshToken(Long userId) {
+    private AuthResponseDTO createUserAuth(Long userId) {
+        String accessToken = jwtUtil.generateToken(userId);
         String refreshToken = refreshUtil.generateRefreshToken();
+        String fintechUseNum = UUID.randomUUID().toString();
+
         redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
+
+        return AuthResponseDTO.create(accessToken, refreshToken, fintechUseNum);
     }
 
     @Transactional
-    public AuthDTO validateAndGetUser(String accessToken) {
+    public String validateUserAuth(String accessToken) {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnauthorizedException("토큰이 유효하지 않습니다.");
         }
@@ -58,14 +63,12 @@ public class UserService {
             throw new UnauthorizedException("유효하지 않은 핀테크 이용번호입니다.");
         }
 
-        User user = userMapper.findUserByUserId(userId);
-        String refreshToken = redisUtil.getValue("refresh:user:" + user.getUserId());
-        return AuthDTO.create(accessToken, refreshToken, fintechUseNum);
+        return fintechUseNum;
     }
 
     @Transactional
-    public AuthDTO getNewAccessTokenByUserId(String refreshToken, Long userId) {
-        refreshToken = refreshToken.replace("Bearer ", "");
+    public AuthResponseDTO getNewAccessTokenByUserId(String refreshToken, Long userId) {
+        refreshToken = refreshToken.replace("Bearer ", "").trim();
 
         // 1. Redis에서 저장된 리프레시 토큰 조회
         String storedRefreshToken = redisUtil.getValue("refresh:user:" + userId);
@@ -82,7 +85,7 @@ public class UserService {
         String newAccessToken = jwtUtil.generateToken(userId);
         String fintechUseNum = userMapper.findFintechUseNumByUserId(userId);
 
-        return AuthDTO.create(newAccessToken, refreshToken, fintechUseNum);
+        return AuthResponseDTO.create(newAccessToken, refreshToken, fintechUseNum);
     }
 
 }
