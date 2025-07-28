@@ -21,12 +21,10 @@ public class UserController {
     private final PortfolioService portfolioService;
 
     @PostMapping("/token")
-    public ResponseEntity<?> createUser(@RequestHeader(value = "Authorization") String authorization, //로그인 액세스 토큰
+    public ResponseEntity<?> createUser(@RequestHeader("X-User-Id") Long userId, //로그인 액세스 토큰
                                         @RequestBody TraineePortfolioCreateRequestDTO reqDTO) {
-
-        //액세스 토큰, 리프레시 토큰 발급
         // 추후에 데이터 추가 생각해보기
-        AuthResponseDTO authResponseDTO = userService.createUser(authorization, reqDTO); // Long userId = authService.getUserId(authorization); 로그인 구현시 활성화
+        AuthResponseDTO authResponseDTO = userService.createUser(userId, reqDTO); // Long userId = authService.getUserId(authorization); 로그인 구현시 활성화
 
         return ResponseEntity.ok(authResponseDTO);
     }
@@ -41,13 +39,4 @@ public class UserController {
         return ResponseEntity.ok(resDTO);
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken( // 액세스 토큰 갱신 by 리프레시 토큰
-                                                 @RequestHeader("Authorization") String refreshHeader,
-                                                 @RequestHeader("X-User-Id") Long userId
-    ) {
-        AuthResponseDTO dto = userService.getNewAccessTokenByUserId(refreshHeader, userId);
-
-        return ResponseEntity.ok(dto);
-    }
 }
