@@ -4,6 +4,7 @@ import com.external.user.domain.Bank;
 import lombok.*;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class TraineePortfolioCreateRequestDTO {

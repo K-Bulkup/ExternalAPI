@@ -5,12 +5,14 @@ import com.external.portfolio.domain.Snapshot;
 import com.external.portfolio.domain.Transaction;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class PortfolioDTO {
     private List<Snapshot> snapshots;
