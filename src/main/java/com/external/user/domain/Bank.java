@@ -6,12 +6,10 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum Bank {
     KB("국민은행"),
     SINHAN("신한은행"),
-    KAKAO("카카오뱅크"),
-    TOSS("토스뱅크"),
-    NH("농협"),
+    IBK("기업은행"),
+    NH("농협은행"),
     WOORI("우리은행"),
-    HANA("하나은행"),
-    ETC("기타");
+    HANA("하나은행");
 
     private final String dbValue;
 
