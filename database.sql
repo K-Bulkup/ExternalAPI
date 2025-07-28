@@ -63,18 +63,17 @@ CREATE INDEX idx_composition_user ON composition_pools(user_id);
 -- 핀테크번호는 유니크 인덱스 권장
 CREATE UNIQUE INDEX idx_users_fintech_use_num ON users(fintech_use_num);
 
-DELETE FROM portfolios;
-
+-- 초기화
 UPDATE transaction_pools
-SET user_id = NULL
-WHERE user_id = 1;
+SET user_id = NULL;
 
 UPDATE composition_pools
-SET user_id = NULL
-WHERE user_id = 1;
+SET user_id = NULL;
 
 DELETE FROM snapshot_pools;
+DELETE FROM portfolios;
 
--- 토큰 테스트
-select * from users;
 delete from users;
+
+-- 테스트
+select * from users;
