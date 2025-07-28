@@ -22,17 +22,11 @@ public class UserService {
 
     private final UserMapper userMapper;
     private final JwtUtil jwtUtil;
-    private final RefreshUtil refreshUtil;
-    private final RedisUtil redisUtil;
-
-    public Long getUserId(String token) {
-        return jwtUtil.getUserId(token.replace("Bearer ", "").trim());
-    }
+    // private final RefreshUtil refreshUtil;
+    // private final RedisUtil redisUtil;
 
     @Transactional
-    public AuthResponseDTO createUser(String authorization, TraineePortfolioCreateRequestDTO reqDTO) {
-        // jwtUtil.getUserId(authorization); 로그인 구현 시 활성화
-        Long userId = 1L;
+    public AuthResponseDTO createUser(Long userId, TraineePortfolioCreateRequestDTO reqDTO) {
         AuthResponseDTO resDTO = createUserAuth(userId);
         User user = User.create(userId, reqDTO.getBank(), resDTO.getFintechUseNum());
         userMapper.createUser(user);
@@ -43,12 +37,12 @@ public class UserService {
 
     private AuthResponseDTO createUserAuth(Long userId) {
         String accessToken = jwtUtil.generateToken(userId);
-        String refreshToken = refreshUtil.generateRefreshToken();
+        // String refreshToken = refreshUtil.generateRefreshToken();
         String fintechUseNum = UUID.randomUUID().toString();
 
-        redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
+        // redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
 
-        return AuthResponseDTO.create(accessToken, refreshToken, fintechUseNum);
+        return AuthResponseDTO.create(accessToken, fintechUseNum);
     }
 
     @Transactional
@@ -66,26 +60,8 @@ public class UserService {
         return fintechUseNum;
     }
 
-    @Transactional
-    public AuthResponseDTO getNewAccessTokenByUserId(String refreshToken, Long userId) {
-        refreshToken = refreshToken.replace("Bearer ", "").trim();
-
-        // 1. Redis에서 저장된 리프레시 토큰 조회
-        String storedRefreshToken = redisUtil.getValue("refresh:user:" + userId);
-
-        if (storedRefreshToken == null) {
-            throw new UnauthorizedException("계좌/은행 정보 재등록 필요");
-        }
-
-        if (!refreshToken.equals(storedRefreshToken)) {
-            throw new UnauthorizedException("유효하지 않은 리프레시 토큰입니다.");
-        }
-
-        // 2. 새로운 액세스 토큰 발급
-        String newAccessToken = jwtUtil.generateToken(userId);
-        String fintechUseNum = userMapper.findFintechUseNumByUserId(userId);
-
-        return AuthResponseDTO.create(newAccessToken, refreshToken, fintechUseNum);
+    public Long getUserId(String token) {
+        return jwtUtil.getUserId(token.replace("Bearer ", "").trim());
     }
 
 }
