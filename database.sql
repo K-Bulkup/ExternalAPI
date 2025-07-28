@@ -1,8 +1,7 @@
 -- ✅ USERS
 CREATE TABLE `users` (
                          `user_id` BIGINT NOT NULL,
-                         `bank` ENUM('국민은행', '신한은행', '카카오뱅크', '토스뱅크', '농협', '우리은행', '하나은행', '기타') NOT NULL,
-                         `account_num` VARCHAR(50) NULL,
+                         `bank` ENUM('국민은행', '신한은행', '기업은행', '농협은행', '우리은행', '하나은행') NOT NULL,
                          `fintech_use_num` VARCHAR(100) NULL,
                          `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                          CONSTRAINT `PK_USERS` PRIMARY KEY (`user_id`)

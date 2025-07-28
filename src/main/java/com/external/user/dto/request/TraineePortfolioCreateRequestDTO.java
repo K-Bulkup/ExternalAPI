@@ -8,5 +8,4 @@ import lombok.*;
 @AllArgsConstructor
 public class TraineePortfolioCreateRequestDTO {
     private Bank bank;
-    private String accountNum;
 }

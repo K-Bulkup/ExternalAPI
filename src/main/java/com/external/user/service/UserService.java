@@ -34,7 +34,7 @@ public class UserService {
         // jwtUtil.getUserId(authorization); 로그인 구현 시 활성화
         Long userId = 1L;
         AuthResponseDTO resDTO = createUserAuth(userId);
-        User user = User.create(userId, reqDTO.getAccountNum(), reqDTO.getBank(), resDTO.getFintechUseNum());
+        User user = User.create(userId, reqDTO.getBank(), resDTO.getFintechUseNum());
         userMapper.createUser(user);
         userMapper.createPortfolio(userId);
 
