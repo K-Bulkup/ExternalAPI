@@ -21,10 +21,9 @@ public class UserController {
     private final PortfolioService portfolioService;
 
     @PostMapping("/token")
-    public ResponseEntity<?> createUser(@RequestHeader("X-User-Id") Long userId, //로그인 액세스 토큰
+    public ResponseEntity<?> createUser(@RequestHeader("Authorization") String authorization, //로그인 액세스 토큰
                                         @RequestBody TraineePortfolioCreateRequestDTO reqDTO) {
-        // 추후에 데이터 추가 생각해보기
-        AuthResponseDTO authResponseDTO = userService.createUser(userId, reqDTO); // Long userId = authService.getUserId(authorization); 로그인 구현시 활성화
+        AuthResponseDTO authResponseDTO = userService.createUser(authorization, reqDTO);
 
         return ResponseEntity.ok(authResponseDTO);
     }
