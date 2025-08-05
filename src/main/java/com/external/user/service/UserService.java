@@ -18,15 +18,17 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    static private final Long expireDuration = 3456000L; // Redis 만료기간 40일
-
+    /*
+    static private final Long expireDuration = 3456000L;
+     private final RefreshUtil refreshUtil;
+     private final RedisUtil redisUtil;
+     */
     private final UserMapper userMapper;
     private final JwtUtil jwtUtil;
-    // private final RefreshUtil refreshUtil;
-    // private final RedisUtil redisUtil;
 
     @Transactional
-    public AuthResponseDTO createUser(Long userId, TraineePortfolioCreateRequestDTO reqDTO) {
+    public AuthResponseDTO createUser(String authorization, TraineePortfolioCreateRequestDTO reqDTO) {
+        Long userId = jwtUtil.getUserId(authorization);
         AuthResponseDTO resDTO = createUserAuth(userId);
         User user = User.create(userId, reqDTO.getBank(), resDTO.getFintechUseNum());
         userMapper.createUser(user);
@@ -39,7 +41,6 @@ public class UserService {
         String accessToken = jwtUtil.generateToken(userId);
         // String refreshToken = refreshUtil.generateRefreshToken();
         String fintechUseNum = UUID.randomUUID().toString();
-
         // redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
 
         return AuthResponseDTO.create(accessToken, fintechUseNum);
@@ -58,10 +59,6 @@ public class UserService {
         }
 
         return fintechUseNum;
-    }
-
-    public Long getUserId(String token) {
-        return jwtUtil.getUserId(token.replace("Bearer ", "").trim());
     }
 
 }
