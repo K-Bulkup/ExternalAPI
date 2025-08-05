@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Service
@@ -32,7 +33,7 @@ public class UserService {
         AuthResponseDTO resDTO = createUserAuth(userId);
         User user = User.create(userId, reqDTO.getBank(), resDTO.getFintechUseNum());
         userMapper.createUser(user);
-        userMapper.createPortfolio(userId);
+        userMapper.createPortfolio(user);
 
         return resDTO;
     }
@@ -40,25 +41,26 @@ public class UserService {
     private AuthResponseDTO createUserAuth(Long userId) {
         String accessToken = jwtUtil.generateToken(userId);
         // String refreshToken = refreshUtil.generateRefreshToken();
-        String fintechUseNum = UUID.randomUUID().toString();
+        String fintechUseNum = UUID.nameUUIDFromBytes(
+                String.valueOf(userId).getBytes(StandardCharsets.UTF_8)
+        ).toString();
         // redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
 
         return AuthResponseDTO.create(accessToken, fintechUseNum);
     }
 
     @Transactional
-    public String validateUserAuth(String accessToken) {
+    public void validateUserAuth(String accessToken, String fintechUseNum) {
         if (!jwtUtil.validateToken(accessToken)) {
             throw new UnauthorizedException("토큰이 유효하지 않습니다.");
         }
         Long userId = jwtUtil.getUserId(accessToken);
-        String fintechUseNum = userMapper.findFintechUseNumByUserId(userId);
+        String fintechUseNumByUserId = userMapper.findFintechUseNumByUserId(userId);
 
-        if(fintechUseNum == null) {
+        if (!fintechUseNumByUserId.equals(fintechUseNum)) {
             throw new UnauthorizedException("유효하지 않은 핀테크 이용번호입니다.");
         }
 
-        return fintechUseNum;
     }
 
 }

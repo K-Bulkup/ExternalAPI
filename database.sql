@@ -6,7 +6,6 @@ USE assetdb;
 CREATE TABLE `users` (
                          `user_id` BIGINT AUTO_INCREMENT NOT NULL,
                          `bank` ENUM('국민은행', '신한은행', '기업은행', '농협은행', '우리은행', '하나은행') NULL,
-                         `fintech_use_num` VARCHAR(100) NULL,
                          `created_at` DATETIME NULL,
                          CONSTRAINT `PK_USERS` PRIMARY KEY (`user_id`)
 );
@@ -14,13 +13,15 @@ CREATE TABLE `users` (
 -- ✅ PORTFOLIOS
 CREATE TABLE `portfolios` (
                               `user_id` BIGINT NOT NULL,
-                              CONSTRAINT `PK_PORTFOLIOS` PRIMARY KEY (`user_id`),
+                              `fintech_use_num` VARCHAR(100) NOT NULL,
+                              CONSTRAINT `PK_PORTFOLIOS` PRIMARY KEY (`user_id`, `fintech_use_num`),
+                              CONSTRAINT `UQ_PORTFOLIOS_FINTECH_USE_NUM` UNIQUE (`fintech_use_num`),
                               CONSTRAINT `FK_users_TO_portfolios` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE
 );
 
 -- ✅ TRANSACTION_POOLS
 CREATE TABLE `transaction_pools` (
-                                     `transaction_id` BIGINT NOT NULL,
+                                     `transaction_id` BIGINT NOT NULL AUTO_INCREMENT,
                                      `user_id` BIGINT NULL,
                                      `transaction_type` ENUM('입금', '출금') NULL,
                                      `amount` BIGINT NOT NULL,
@@ -46,11 +47,11 @@ CREATE TABLE `snapshot_pools` (
 
 -- ✅ COMPOSITION_POOLS
 CREATE TABLE `composition_pools` (
-                                     `composition_id` BIGINT NOT NULL,
+                                     `composition_id` BIGINT NOT NULL AUTO_INCREMENT,
                                      `user_id` BIGINT NULL,
                                      `asset_composition` JSON NOT NULL,
                                      CONSTRAINT `PK_COMPOSITION_POOLS` PRIMARY KEY (`composition_id`),
-                                     CONSTRAINT `FK_users_TO_composition_pools` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`)
+                                     CONSTRAINT `FK_users_TO_composition_pools` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE
 );
 
 -- 거래 내역 관련 인덱스
@@ -63,9 +64,6 @@ CREATE INDEX idx_snapshot_date ON snapshot_pools(snapshot_date);
 
 -- 자산 구성 인덱스
 CREATE INDEX idx_composition_user ON composition_pools(user_id);
-
--- 핀테크번호는 유니크 인덱스 권장
-CREATE UNIQUE INDEX idx_users_fintech_use_num ON users(fintech_use_num);
 
 INSERT INTO users (user_id) VALUES (1);
 INSERT INTO users (user_id) VALUES (2);
@@ -119,17 +117,12 @@ INSERT INTO users (user_id) VALUES (49);
 INSERT INTO users (user_id) VALUES (50);
 
 -- 초기화
-UPDATE transaction_pools
-SET user_id = NULL;
-
 UPDATE composition_pools
 SET user_id = NULL;
 
 DELETE FROM snapshot_pools;
 DELETE FROM portfolios;
 
-delete from portfolios;
-delete from snapshot_pools;
 -- 테스트
 select * from users;
 select * from portfolios;

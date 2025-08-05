@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -26,10 +27,10 @@ public class MappingDataService {
     public void mapUserAsset(String authorization) {
         Long userId = jwtUtil.getUserId(authorization);
         List<Transaction> transactions = userAssetMapper.findTransactionByUserId(userId);
+        transactions.sort(Comparator.comparing(Transaction::getTranDate));
+
         List<Snapshot> snapshots = new ArrayList<>();
-
         long balance = 10_000_000L;
-
         for (Transaction tx : transactions) {
             if (tx.getTransactionType() == TransactionType.입금 ) {
                 balance += tx.getAmount();
