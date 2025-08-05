@@ -6,8 +6,12 @@
 <mapper namespace="com.external.user.mapper.UserMapper">
 
     <insert id="createUser" parameterType="com.external.user.domain.User">
-        INSERT INTO users (user_id, bank, fintech_use_num)
-        VALUES (#{userId}, #{bank}, #{fintechUseNum})
+        INSERT INTO users (user_id, bank, fintech_use_num, created_at)
+        VALUES (#{userId}, #{bank}, #{fintechUseNum}, #{createdAt})
+            ON DUPLICATE KEY UPDATE
+                                 bank = VALUES(bank),
+                                 fintech_use_num = VALUES(fintech_use_num),
+                                created_at = VALUES(created_at)
     </insert>
 
     <insert id="createPortfolio">

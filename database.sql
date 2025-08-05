@@ -1,9 +1,13 @@
+DROP DATABASE IF EXISTS assetdb;
+CREATE DATABASE assetdb;
+USE assetdb;
+
 -- ✅ USERS
 CREATE TABLE `users` (
-                         `user_id` BIGINT NOT NULL,
-                         `bank` ENUM('국민은행', '신한은행', '기업은행', '농협은행', '우리은행', '하나은행') NOT NULL,
+                         `user_id` BIGINT AUTO_INCREMENT NOT NULL,
+                         `bank` ENUM('국민은행', '신한은행', '기업은행', '농협은행', '우리은행', '하나은행') NULL,
                          `fintech_use_num` VARCHAR(100) NULL,
-                         `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         `created_at` DATETIME NULL,
                          CONSTRAINT `PK_USERS` PRIMARY KEY (`user_id`)
 );
 
@@ -63,6 +67,57 @@ CREATE INDEX idx_composition_user ON composition_pools(user_id);
 -- 핀테크번호는 유니크 인덱스 권장
 CREATE UNIQUE INDEX idx_users_fintech_use_num ON users(fintech_use_num);
 
+INSERT INTO users (user_id) VALUES (1);
+INSERT INTO users (user_id) VALUES (2);
+INSERT INTO users (user_id) VALUES (3);
+INSERT INTO users (user_id) VALUES (4);
+INSERT INTO users (user_id) VALUES (5);
+INSERT INTO users (user_id) VALUES (6);
+INSERT INTO users (user_id) VALUES (7);
+INSERT INTO users (user_id) VALUES (8);
+INSERT INTO users (user_id) VALUES (9);
+INSERT INTO users (user_id) VALUES (10);
+INSERT INTO users (user_id) VALUES (11);
+INSERT INTO users (user_id) VALUES (12);
+INSERT INTO users (user_id) VALUES (13);
+INSERT INTO users (user_id) VALUES (14);
+INSERT INTO users (user_id) VALUES (15);
+INSERT INTO users (user_id) VALUES (16);
+INSERT INTO users (user_id) VALUES (17);
+INSERT INTO users (user_id) VALUES (18);
+INSERT INTO users (user_id) VALUES (19);
+INSERT INTO users (user_id) VALUES (20);
+INSERT INTO users (user_id) VALUES (21);
+INSERT INTO users (user_id) VALUES (22);
+INSERT INTO users (user_id) VALUES (23);
+INSERT INTO users (user_id) VALUES (24);
+INSERT INTO users (user_id) VALUES (25);
+INSERT INTO users (user_id) VALUES (26);
+INSERT INTO users (user_id) VALUES (27);
+INSERT INTO users (user_id) VALUES (28);
+INSERT INTO users (user_id) VALUES (29);
+INSERT INTO users (user_id) VALUES (30);
+INSERT INTO users (user_id) VALUES (31);
+INSERT INTO users (user_id) VALUES (32);
+INSERT INTO users (user_id) VALUES (33);
+INSERT INTO users (user_id) VALUES (34);
+INSERT INTO users (user_id) VALUES (35);
+INSERT INTO users (user_id) VALUES (36);
+INSERT INTO users (user_id) VALUES (37);
+INSERT INTO users (user_id) VALUES (38);
+INSERT INTO users (user_id) VALUES (39);
+INSERT INTO users (user_id) VALUES (40);
+INSERT INTO users (user_id) VALUES (41);
+INSERT INTO users (user_id) VALUES (42);
+INSERT INTO users (user_id) VALUES (43);
+INSERT INTO users (user_id) VALUES (44);
+INSERT INTO users (user_id) VALUES (45);
+INSERT INTO users (user_id) VALUES (46);
+INSERT INTO users (user_id) VALUES (47);
+INSERT INTO users (user_id) VALUES (48);
+INSERT INTO users (user_id) VALUES (49);
+INSERT INTO users (user_id) VALUES (50);
+
 -- 초기화
 UPDATE transaction_pools
 SET user_id = NULL;
@@ -73,7 +128,8 @@ SET user_id = NULL;
 DELETE FROM snapshot_pools;
 DELETE FROM portfolios;
 
-delete from users;
-
+delete from portfolios;
+delete from snapshot_pools;
 -- 테스트
 select * from users;
+select * from portfolios;

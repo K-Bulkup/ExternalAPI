@@ -49,4 +49,10 @@
         WHERE composition_id = #{composition.compositionId}
     </update>
 
+    <select id="pickNewComposition" resultType="com.external.portfolio.domain.Composition">
+        SELECT *
+        FROM composition_pools
+        WHERE user_id IS NULL
+            LIMIT 1;
+    </select>
 </mapper>

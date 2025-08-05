@@ -29,9 +29,9 @@ public class UserController {
     }
 
     @PostMapping("/user-data")
-    public ResponseEntity<?> createUserData(@RequestHeader(value = "Authorization") String authorization) { // 외부 API 액세스 토큰
+    public ResponseEntity<?> getUserData(@RequestHeader(value = "Authorization") String authorization) { // 외부 API 액세스 토큰
         String fintechUseNum = userService.validateUserAuth(authorization);
-        mappingDataService.mapDummyDataToUser(authorization);
+        mappingDataService.mapUserAsset(authorization);
         PortfolioDTO dto = portfolioService.getAllAssetData(authorization);
 
         TraineePortfolioCreateResponseDTO resDTO = TraineePortfolioCreateResponseDTO.create(fintechUseNum, dto);
