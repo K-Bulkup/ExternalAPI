@@ -6,21 +6,20 @@
 <mapper namespace="com.external.user.mapper.UserMapper">
 
     <insert id="createUser" parameterType="com.external.user.domain.User">
-        INSERT INTO users (user_id, bank, fintech_use_num, created_at)
-        VALUES (#{userId}, #{bank}, #{fintechUseNum}, #{createdAt})
+        INSERT INTO users (user_id, bank, created_at)
+        VALUES (#{userId}, #{bank}, #{createdAt})
             ON DUPLICATE KEY UPDATE
                                  bank = VALUES(bank),
-                                 fintech_use_num = VALUES(fintech_use_num),
                                 created_at = VALUES(created_at)
     </insert>
 
     <insert id="createPortfolio">
-        INSERT INTO portfolios (user_id) VALUES (#{userId})
+        INSERT INTO portfolios (user_id, fintech_use_num) VALUES (#{userId}, #{fintechUseNum})
     </insert>
 
     <select id="findFintechUseNumByUserId" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT fintech_use_num
-        FROM users
+        FROM portfolios
         WHERE user_id = #{userId}
     </select>
 

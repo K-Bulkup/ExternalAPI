@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface UserMapper {
     void createUser(User user);
 
-    void createPortfolio(Long userId);
+    void createPortfolio(User user);
 
     String findFintechUseNumByUserId(Long userId);
 }
