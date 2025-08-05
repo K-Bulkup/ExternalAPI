@@ -28,11 +28,14 @@ public class JwtUtil {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMs);
 
+        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
+        claims.put("userId", userId); // ✅ 명시적으로 claims에 넣기
+
         return Jwts.builder()
-                .setSubject(String.valueOf(userId))
+                .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 

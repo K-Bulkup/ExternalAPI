@@ -20,4 +20,6 @@ public interface UserAssetMapper {
     List<Transaction> findTransactionByUserId(Long userId);
 
     Composition findCompositionByUserId(Long userId);
+
+    Composition pickNewComposition();
 }
