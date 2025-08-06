@@ -14,7 +14,10 @@
     </insert>
 
     <insert id="createPortfolio">
-        INSERT INTO portfolios (user_id, fintech_use_num) VALUES (#{userId}, #{fintechUseNum})
+        INSERT INTO portfolios (user_id, fintech_use_num)
+        VALUES (#{userId}, #{fintechUseNum})
+            ON DUPLICATE KEY UPDATE
+                                 fintech_use_num = VALUES(fintech_use_num)
     </insert>
 
     <select id="findFintechUseNumByUserId" parameterType="java.lang.Long" resultType="java.lang.String">

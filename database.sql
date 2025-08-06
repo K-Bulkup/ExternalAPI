@@ -14,7 +14,7 @@ CREATE TABLE `users` (
 CREATE TABLE `portfolios` (
                               `user_id` BIGINT NOT NULL,
                               `fintech_use_num` VARCHAR(100) NOT NULL,
-                              CONSTRAINT `PK_PORTFOLIOS` PRIMARY KEY (`user_id`, `fintech_use_num`),
+                              CONSTRAINT `PK_PORTFOLIOS` PRIMARY KEY (`user_id`),
                               CONSTRAINT `UQ_PORTFOLIOS_FINTECH_USE_NUM` UNIQUE (`fintech_use_num`),
                               CONSTRAINT `FK_users_TO_portfolios` FOREIGN KEY (`user_id`) REFERENCES `users`(`user_id`) ON DELETE CASCADE
 );
