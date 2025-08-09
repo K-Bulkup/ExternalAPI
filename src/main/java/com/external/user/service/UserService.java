@@ -6,8 +6,6 @@ import com.external.user.dto.request.TraineePortfolioCreateRequestDTO;
 import com.external.user.exception.UnauthorizedException;
 import com.external.user.mapper.UserMapper;
 import com.external.user.util.JwtUtil;
-import com.external.user.util.RefreshUtil;
-import com.external.user.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +45,16 @@ public class UserService {
         // redisUtil.setValue("refresh:user:" + userId, refreshToken, expireDuration);
 
         return AuthResponseDTO.create(accessToken, fintechUseNum);
+    }
+
+    public String createAccessToken(String authorization, String fintechUseNum) {
+        Long userId = jwtUtil.getUserId(authorization);
+        String fintechUseNumByUserId = userMapper.findFintechUseNumByUserId(userId);
+
+        if (!fintechUseNumByUserId.equals(fintechUseNum)) {
+            throw new UnauthorizedException("유효하지 않은 핀테크 이용번호입니다.");
+        }
+        return jwtUtil.generateToken(userId);
     }
 
     @Transactional
