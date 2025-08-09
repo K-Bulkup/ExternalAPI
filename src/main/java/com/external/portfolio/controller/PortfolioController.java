@@ -15,7 +15,7 @@ public class PortfolioController {
 
     @PostMapping("/user-data")
     public ResponseEntity<?> getUserData(@RequestHeader(value = "Authorization") String authorization, @RequestParam("fintechUseNum") String fintechUseNum) { // 외부 API 액세스 토큰
-        TraineePortfolioCreateResponseDTO dto = TraineePortfolioCreateResponseDTO.create(fintechUseNum, portfolioService.getAllAssetData(authorization, fintechUseNum));
+        TraineePortfolioCreateResponseDTO dto = TraineePortfolioCreateResponseDTO.create(fintechUseNum, portfolioService.createAllAssetData(authorization, fintechUseNum));
         return ResponseEntity.ok(dto);
     }
 }

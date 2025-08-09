@@ -24,7 +24,7 @@ public class PortfolioService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public PortfolioDTO getAllAssetData(String authorization, String fintechUseNum) {
+    public PortfolioDTO createAllAssetData(String authorization, String fintechUseNum) {
         userService.validateUserAuth(authorization, fintechUseNum);
         mappingDataService.mapUserAsset(authorization);
         Long userId = jwtUtil.getUserId(authorization);
