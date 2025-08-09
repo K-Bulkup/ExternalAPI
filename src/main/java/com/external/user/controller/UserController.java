@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/token")
-    public ResponseEntity<?> getToken(@RequestHeader("Authorization") String authorization, @RequestParam("fintechUseNum") String fintechUseNum) {
+    public ResponseEntity<?> getAccessToken(@RequestHeader("Authorization") String authorization, @RequestParam("fintechUseNum") String fintechUseNum) {
         String accessToken = userService.createAccessToken(authorization, fintechUseNum);
         return ResponseEntity.ok(AccessTokenResponseDTO.create(accessToken));
     }
