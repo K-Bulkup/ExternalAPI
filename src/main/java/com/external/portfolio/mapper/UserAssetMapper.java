@@ -5,6 +5,7 @@ import com.external.portfolio.domain.Snapshot;
 import com.external.portfolio.domain.Transaction;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface UserAssetMapper {
@@ -17,7 +18,9 @@ public interface UserAssetMapper {
 
     List<Snapshot> findSnapshotsByUserId(Long userId);
 
-    List<Transaction> findTransactionByUserId(Long userId);
+    List<Transaction> findTransactionByUserId(@Param("userId") Long userId,
+                                              @Param("start") LocalDate start,
+                                              @Param("end") LocalDate end);
 
     Composition findCompositionByUserId(Long userId);
 

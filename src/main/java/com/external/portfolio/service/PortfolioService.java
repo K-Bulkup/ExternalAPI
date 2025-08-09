@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -28,7 +29,9 @@ public class PortfolioService {
         mappingDataService.mapUserAsset(authorization);
         Long userId = jwtUtil.getUserId(authorization);
         List<Snapshot> snapshots = userAssetMapper.findSnapshotsByUserId(userId);
-        List<Transaction> transactions = userAssetMapper.findTransactionByUserId(userId);
+        LocalDate end = LocalDate.now();
+        LocalDate start = end.minusMonths(3).withDayOfMonth(1);
+        List<Transaction> transactions = userAssetMapper.findTransactionByUserId(userId, start, end);
         Composition composition = userAssetMapper.findCompositionByUserId(userId);
 
         return new PortfolioDTO(snapshots, transactions, composition);

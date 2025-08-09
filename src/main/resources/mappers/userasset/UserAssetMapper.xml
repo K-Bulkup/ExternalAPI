@@ -13,11 +13,15 @@
     </select>
 
     <select id="findTransactionByUserId" resultType="com.external.portfolio.domain.Transaction">
+    <![CDATA[
         SELECT *
         FROM transaction_pools
         WHERE user_id = #{userId}
+          AND tran_date >= #{start}
+          AND tran_date < #{end}
         ORDER BY tran_date DESC
-    </select>
+        ]]>
+</select>
 
     <select id="findCompositionByUserId" resultType="com.external.portfolio.domain.Composition">
         SELECT *
@@ -52,7 +56,6 @@
     <select id="pickNewComposition" resultType="com.external.portfolio.domain.Composition">
         SELECT *
         FROM composition_pools
-        WHERE user_id IS NULL
-            LIMIT 1;
+        WHERE user_id IS NULL LIMIT 1;
     </select>
 </mapper>
