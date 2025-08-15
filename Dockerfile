@@ -4,16 +4,13 @@ WORKDIR /app
 
 # 프로젝트 메타/래퍼 먼저 복사 (캐시 최적화)
 COPY build.gradle settings.gradle ./
-# Kotlin DSL이면 settings.gradle.kts도 복사
-# COPY build.gradle.kts settings.gradle.kts ./
-
 # COPY gradlew ./
 # COPY gradle ./gradle
 
-# gradle.properties 사용한다면 함께 복사
 # COPY gradle.properties ./
+RUN gradle dependencies --no-daemon || true
 
-RUN sed -i 's/\r$//' ./gradlew && chmod +x ./gradlew
+#RUN sed -i 's/\r$//' ./gradlew && chmod +x ./gradlew
 
 # 권한 및 의존 예열
 RUN ./gradlew dependencies --no-daemon
