@@ -12,10 +12,10 @@ COPY gradle ./gradle
 # gradle.properties 사용한다면 함께 복사
 # COPY gradle.properties ./
 
+RUN sed -i 's/\r$//' ./gradlew && chmod +x ./gradlew
+
 # 권한 및 의존 예열
-RUN sed -i 's/\r$//' ./gradlew \
- && chmod +x ./gradlew \
- && ./gradlew dependencies --no-daemon
+RUN ./gradlew dependencies --no-daemon
 
 # 소스 복사
 COPY src ./src
