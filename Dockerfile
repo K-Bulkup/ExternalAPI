@@ -2,32 +2,19 @@
 FROM gradle:8.10.2-jdk17 AS build
 WORKDIR /app
 
-# 프로젝트 메타/래퍼 먼저 복사 (캐시 최적화)
+# 메타 먼저 → 캐시 예열
 COPY build.gradle settings.gradle ./
-# COPY gradlew ./
-# COPY gradle ./gradle
-
+# gradle.properties 쓰면 다음 줄도:
 # COPY gradle.properties ./
 RUN gradle dependencies --no-daemon || true
 
-#RUN sed -i 's/\r$//' ./gradlew && chmod +x ./gradlew
-
-# 권한 및 의존 예열
-RUN ./gradlew dependencies --no-daemon
-
-# 소스 복사
+# 소스 복사 후 빌드
 COPY src ./src
+RUN gradle clean build -x test --no-daemon
 
-# 빌드 (테스트 제외는 선택)
-RUN ./gradlew clean build -x test --no-daemon
-
-# ---------- Stage 2: Runtime (Tomcat 9, JDK 17) ----------
+# ---- Stage 2: Tomcat ----
 FROM tomcat:9.0-jdk17-temurin
-# 불필요한 기본 앱 제거
 RUN rm -rf /usr/local/tomcat/webapps/*
-
-# WAR → ROOT로 배포 (Tomcat이 자동으로 풀어줌)
 COPY --from=build /app/build/libs/*.war /usr/local/tomcat/webapps/ROOT.war
-
 EXPOSE 8080
-CMD ["catalina.sh", "run"]
+CMD ["catalina.sh","run"]
