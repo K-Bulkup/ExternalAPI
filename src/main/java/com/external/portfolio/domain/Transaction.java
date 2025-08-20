@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class Transaction {
     private Long transactionId;
-    private Long userId;
+    private String fintechUseNum;
     private TransactionType transactionType;
     private Long amount;
     private TransactionCategory transactionCategory;
@@ -17,14 +17,14 @@ public class Transaction {
 
     public static Transaction createTransaction(
             Long transactionId,
-            Long userId,
+            String fintechUseNum,
             Long amount,
             TransactionCategory transactionCategory,
             LocalDate tranDate
     ) {
         return Transaction.builder()
                 .transactionId(transactionId)
-                .userId(userId)
+                .fintechUseNum(fintechUseNum)
                 .amount(amount)
                 .transactionCategory(transactionCategory)
                 .tranDate(tranDate)

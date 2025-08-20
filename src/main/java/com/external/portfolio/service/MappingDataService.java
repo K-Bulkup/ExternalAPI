@@ -28,11 +28,10 @@ public class MappingDataService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public void mapUserAsset(String authorization) {
-        Long userId = jwtUtil.getUserId(authorization);
+    public void mapUserAsset(String fintechUseNum) {
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusMonths(3).withDayOfMonth(1);
-        List<Transaction> transactions = userAssetMapper.findTransactionByUserId(userId, start, end);
+        List<Transaction> transactions = userAssetMapper.findTransactionByfintechUseNum(fintechUseNum, start, end);
         // 1) 거래 정렬 (시간 오름차순)
         transactions.sort(Comparator.comparing(Transaction::getTranDate));
 
@@ -62,12 +61,10 @@ public class MappingDataService {
 
             // 날짜의 '마감 잔액'으로 스냅샷 1건 (타임스탬프는 팀 규칙대로)
             LocalDate date = e.getKey();
-            snapshots.add(Snapshot.create(userId, balance, date));
+            snapshots.add(Snapshot.create(fintechUseNum, balance, date));
         }
-        userAssetMapper.assignSnapshotPools(userId, snapshots);
+        userAssetMapper.assignSnapshotPools(fintechUseNum, snapshots);
 
-        Composition composition = userAssetMapper.pickNewComposition();
-        userAssetMapper.assignCompositionPool(userId, composition);
     }
 
 }

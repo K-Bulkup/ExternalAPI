@@ -26,13 +26,13 @@ public class PortfolioService {
     @Transactional
     public PortfolioDTO createAllAssetData(String authorization, String fintechUseNum) {
         userService.validateUserAuth(authorization, fintechUseNum);
-        mappingDataService.mapUserAsset(authorization);
-        Long userId = jwtUtil.getUserId(authorization);
-        List<Snapshot> snapshots = userAssetMapper.findSnapshotsByUserId(userId);
+        mappingDataService.mapUserAsset(fintechUseNum);
+
+        List<Snapshot> snapshots = userAssetMapper.findSnapshotsByfintechUseNum(fintechUseNum);
         LocalDate end = LocalDate.now();
         LocalDate start = end.minusMonths(3).withDayOfMonth(1);
-        List<Transaction> transactions = userAssetMapper.findTransactionByUserId(userId, start, end);
-        Composition composition = userAssetMapper.findCompositionByUserId(userId);
+        List<Transaction> transactions = userAssetMapper.findTransactionByfintechUseNum(fintechUseNum, start, end);
+        Composition composition = userAssetMapper.findCompositionByfintechUseNum(fintechUseNum);
 
         return new PortfolioDTO(snapshots, transactions, composition);
     }
