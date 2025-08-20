@@ -5,29 +5,23 @@
 
 <mapper namespace="com.external.portfolio.mapper.UserAssetMapper">
 
-    <select id="findSnapshotsByUserId" resultType="com.external.portfolio.domain.Snapshot">
+    <select id="findSnapshotsByfintechUseNum" resultType="com.external.portfolio.domain.Snapshot">
         SELECT *
         FROM snapshot_pools
-        WHERE user_id = #{userId}
+        WHERE fintech_use_num = #{fintechUseNum}
         ORDER BY snapshot_date DESC
     </select>
 
-    <select id="findTransactionByUserId" resultType="com.external.portfolio.domain.Transaction">
+    <select id="findTransactionByfintechUseNum" resultType="com.external.portfolio.domain.Transaction">
     <![CDATA[
         SELECT *
         FROM transaction_pools
-        WHERE user_id = #{userId}
+        WHERE fintech_use_num = #{fintechUseNum}
           AND tran_date >= #{start}
           AND tran_date < #{end}
         ORDER BY tran_date DESC
         ]]>
 </select>
-
-    <select id="findCompositionByUserId" resultType="com.external.portfolio.domain.Composition">
-        SELECT *
-        FROM composition_pools
-        WHERE user_id = #{userId} LIMIT 1
-    </select>
 
     <update id="assignTransactionPools">
         UPDATE transaction_pools
@@ -40,22 +34,18 @@
     </update>
 
     <insert id="assignSnapshotPools">
-        INSERT INTO snapshot_pools (user_id, balance, snapshot_date)
+        INSERT INTO snapshot_pools (fintech_use_num, balance, snapshot_date)
         VALUES
         <foreach collection="snapshots" item="snapshot" separator=",">
-            (#{userId}, #{snapshot.balance}, #{snapshot.snapshotDate})
+            (#{fintechUseNum}, #{snapshot.balance}, #{snapshot.snapshotDate})
         </foreach>
+        ON DUPLICATE KEY UPDATE
+        balance = VALUES(balance)
     </insert>
 
-    <update id="assignCompositionPool">
-        UPDATE composition_pools
-        SET user_id = #{userId}
-        WHERE composition_id = #{composition.compositionId}
-    </update>
-
-    <select id="pickNewComposition" resultType="com.external.portfolio.domain.Composition">
+    <select id="findCompositionByfintechUseNum" resultType="com.external.portfolio.domain.Composition">
         SELECT *
         FROM composition_pools
-        WHERE user_id IS NULL LIMIT 1;
+        WHERE fintech_use_num = #{fintechUseNum};
     </select>
 </mapper>

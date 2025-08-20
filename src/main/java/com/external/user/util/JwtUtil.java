@@ -24,12 +24,11 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(Long userId) {
+    public String generateToken(String fintechUseNum) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMs);
 
-        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
-        claims.put("userId", userId); // ✅ 명시적으로 claims에 넣기
+        Claims claims = Jwts.claims().setSubject(String.valueOf(fintechUseNum));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -39,7 +38,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Long getUserId(String token) {
+    public String getFintechUseNum(String token) {
         token = token.replace("Bearer ", "").trim();
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(secretKey)
@@ -47,7 +46,7 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.get("userId", Long.class);
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {

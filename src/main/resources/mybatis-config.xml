@@ -6,6 +6,7 @@
         <setting name="logImpl" value="STDOUT_LOGGING"/>
     </settings>
     <typeHandlers>
+        <typeHandler handler="com.external.user.handler.BankTypeHandler"/>
         <typeHandler handler="com.external.portfolio.handler.TransactionCategoryTypeHandler"/>
         <typeHandler handler="com.external.portfolio.handler.MapTypeHandler" javaType="java.util.Map"/>
     </typeHandlers>

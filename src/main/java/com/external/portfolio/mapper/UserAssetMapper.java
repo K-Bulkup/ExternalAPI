@@ -9,20 +9,16 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface UserAssetMapper {
-     void assignSnapshotPools(@Param("userId") Long userId,
+     void assignSnapshotPools(@Param("fintechUseNum") String fintechUseNum,
                              @Param("snapshots") List<Snapshot> snapshots);
-
-     void assignCompositionPool(@Param("userId") Long userId, @Param("composition") Composition composition);
 
     void assignTransactionPools(@Param("userId") Long userId, @Param("transactions") List<Transaction> transactions);
 
-    List<Snapshot> findSnapshotsByUserId(Long userId);
+    List<Snapshot> findSnapshotsByfintechUseNum(@Param("fintechUseNum") String fintechUseNum);
 
-    List<Transaction> findTransactionByUserId(@Param("userId") Long userId,
-                                              @Param("start") LocalDate start,
-                                              @Param("end") LocalDate end);
+    List<Transaction> findTransactionByfintechUseNum(@Param("fintechUseNum") String fintechUseNum,
+                                                     @Param("start") LocalDate start,
+                                                     @Param("end") LocalDate end);
 
-    Composition findCompositionByUserId(Long userId);
-
-    Composition pickNewComposition();
+    Composition findCompositionByfintechUseNum(@Param("fintechUseNum") String fintechUseNum);
 }

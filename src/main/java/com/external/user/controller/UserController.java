@@ -16,16 +16,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create-user")
-    public ResponseEntity<?> createUser(@RequestHeader("Authorization") String authorization, //로그인 액세스 토큰
-                                        @RequestBody TraineePortfolioCreateRequestDTO reqDTO) {
-        AuthResponseDTO authResponseDTO = userService.createUser(authorization, reqDTO);
-
+    public ResponseEntity<?> createUser(@RequestBody TraineePortfolioCreateRequestDTO reqDTO) {
+        AuthResponseDTO authResponseDTO = userService.createUser(reqDTO);
         return ResponseEntity.ok(authResponseDTO); //액세스 토큰, 핀테크 번호 반환
     }
 
     @PostMapping("/token")
-    public ResponseEntity<?> getToken(@RequestHeader("Authorization") String authorization, @RequestParam("fintechUseNum") String fintechUseNum) {
-        String accessToken = userService.createAccessToken(authorization, fintechUseNum);
+    public ResponseEntity<?> getToken(@RequestParam("fintechUseNum") String fintechUseNum) {
+        String accessToken = userService.createAccessToken(fintechUseNum);
         return ResponseEntity.ok(AccessTokenResponseDTO.create(accessToken));
     }
 }

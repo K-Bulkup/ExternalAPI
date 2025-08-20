@@ -8,7 +8,6 @@ import java.util.Map;
 @Data
 @Builder
 public class Composition {
-    private Long compositionId;
-    private Long userId;
+    private String fintechUseNum;
     private Map<String, Double> assetComposition;
 }
